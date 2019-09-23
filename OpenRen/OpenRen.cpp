@@ -1,206 +1,19 @@
 // OpenRen.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
+#include "OpenRen.h"
 
-#include <iostream>
-#include <string>
-#include <Windows.h>
+#include <math.h>
 
-int main()
-{
-    std::cout << "Hello World!\n";
-}
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-
-// Fake Exports for now
-
-#define DllExport   __declspec( dllexport )
-
-// NOLF HEADER
-// Render modes are what are used to describe a video mode/video card.
-struct RMode
-{
-	unsigned int			m_bHardware;
-
-	char			m_RenderDLL[256];		// What DLL this comes from.		
-	char			m_InternalName[128];	// This is what the DLLs use to identify a card.
-	char			m_Description[128];		// This is a 'friendly' string describing the card.
-
-	unsigned int	m_Width, m_Height, m_BitDepth;
-	RMode* m_pNext;
-};
-// END NOLF
-
-// Jake's guessing iunno
-
-struct InitStruct
-{
-	int magic;
-	// I see width/height mentioned, so it must just have one of these boys
-	RMode renderMode;
-
-	HWND hMainWnd;
-};
-
-
-struct LinkStruct {
-	/*
-	37 functions?
-	*(undefined4*)(param_1 + 0x6c) = 0x100215a0;
-	*(undefined4*)(param_1 + 0x70) = 0x100211d0;
-	*(undefined4*)(param_1 + 0x74) = 0x10039fe0;
-	*(undefined4*)(param_1 + 0x78) = 0x1003aac0;
-	*(undefined4*)(param_1 + 0x7c) = 0x10033160;
-	*(undefined4*)(param_1 + 0x80) = 0x10032c00;
-	*(undefined4*)(param_1 + 0x84) = 0x100262f0;
-	*(undefined4*)(param_1 + 0x88) = 0x10032e50;
-	*(undefined4*)(param_1 + 0x8c) = 0x10032ea0;
-	*(undefined4*)(param_1 + 0x90) = 0x10032f20;
-	*(undefined4*)(param_1 + 0x94) = 0x10034930;
-	*(undefined4*)(param_1 + 0x98) = 0x10034b00;
-	*(undefined4*)(param_1 + 0xa0) = 0x10034c70;
-	*(undefined4*)(param_1 + 0xa4) = 0x10034ed0;
-	*(undefined4*)(param_1 + 0xa8) = 0x10034eb0;
-	*(undefined4*)(param_1 + 0xac) = 0x10034ef0;
-	*(undefined4*)(param_1 + 0x9c) = 0x10034c60;
-	*(undefined4*)(param_1 + 0xdc) = 0x10034580;
-	*(undefined4*)(param_1 + 0xe0) = 0x10034510;
-	*(undefined4*)(param_1 + 0xb0) = 0x1002d1c0;
-	*(undefined4*)(param_1 + 0xb4) = 0x10032d00;
-	*(undefined4*)(param_1 + 0xb8) = 0x10020fd0;
-	*(undefined4*)(param_1 + 0xbc) = 0x100371e0;
-	*(undefined4*)(param_1 + 0xc0) = 0x10032e40;
-	*(undefined4*)(param_1 + 0xc4) = 0x10036df0;
-	*(undefined4*)(param_1 + 200) = 0x100367b0;
-	*(undefined4*)(param_1 + 0xcc) = 0x100368e0;
-	*(undefined4*)(param_1 + 0xd0) = 0x10036920;
-	*(undefined4*)(param_1 + 0xd4) = 0x10036950;
-	*(undefined4*)(param_1 + 0xd8) = 0x100369a0;
-	*(undefined4*)(param_1 + 0xe4) = 0x100369d0;
-	*(undefined4*)(param_1 + 0xe8) = 0x10036a90;
-	*(undefined4*)(param_1 + 0xf4) = 0x10036e40;
-	*(undefined4*)(param_1 + 0xf8) = 0x10021e50;
-	*(undefined4*)(param_1 + 0xec) = 0x10036cf0;
-	*(undefined4*)(param_1 + 0xfc) = 0x10036ae0;
-	*(undefined4*)(param_1 + 0xf0) = 0x10036da0;
-	*/
-
-	// FUN_100215a0
-	// Initializes d3d, setups window, and sets position
-	unsigned int (__cdecl *Init)(InitStruct* param_1);
-	
-	// FUN_100211d0
-	// Loops setting up some variables
-	// Eventually runs ShowCursor(1)
-	// Maybe Term?
-	void (*Term)(void);
-
-	// UndefinedFunction_10039fe0
-	// Possibly CreateSurface?
-	void (*CreateSurface)(int width, int height);
-
-	// UndefinedFunction_1003aac0
-	// Lol no clue, Maybe DeleteSurface?
-	void (*DeleteSurface)(int iParm1);
-
-	// UndefinedFunction_10033160
-	// Ohboy double pointer ahhh
-	// Mentions LightMaps
-	unsigned char** (*UndefinedFunction_10033160)(unsigned int* puParm1);
-
-	void (*UndefinedFunction_10032c00)(unsigned char** ppuParm1);
-
-	void (*UndefinedFunction_100262f0)(int* piParm1, unsigned int uParm2);
-
-	unsigned int (*UndefinedFunction_10032e50)(void);
-
-#if 0
-	// Flip the screen.  Flags are a combination of FLIPSCREEN_ flags in de_codes.
-		// Returns LT_OK or LT_NOTINITIALIZED.
-	LTRESULT(*FlipScreen)(uint32 flags);
-
-	// Clear the backbuffer.  Pass in NULL to clear the whole screen.
-	// Flags is a combination of the CLEARSCREEN_ flags in de_codes.h.
-	// Returns LT_OK or LT_NOTINITIALIZED.
-	LTRESULT(*ClearScreen)(LTRect* pClearRect, uint32 flags);
-
-	// You must be in a Start3D()/End3D() block in order to render
-	// through any cameras.
-	// Returns LT_OK or LT_NOTINITIALIZED or LT_ALREADYIN3D.
-	LTRESULT(*Start3D)();
-
-	// Render from the camera's position into its rectangle.
-	// Returns LT_OK or LT_NOTINITIALIZED or LT_NOTIN3D.
-	LTRESULT(*RenderCamera)(HLOCALOBJ hCamera);
-
-	// Renders the list of objects through the given camera.
-	// Returns LT_OK or LT_NOTINITIALIZED or LT_NOTIN3D.
-	LTRESULT(*RenderObjects)(HLOCALOBJ hCamera, HLOCALOBJ* pObjects, int nObjects);
-
-	// You must be in a StartOptimized2D()/EndOptimized2D() block to draw any optimized 2D surfaces.
-	LTRESULT(*StartOptimized2D)();
-	LTRESULT(*EndOptimized2D)();
-
-	// Change the src/dest blend mode for rendering Optimized2D surfaces  (Defaults to LTSURFACEBLEND_ALPHA)
-	// Note : Drawing a surface w/ a blend mode other than _ALPHA will automatically optimize the surface
-	LTRESULT(*SetOptimized2DBlend)(LTSurfaceBlend blend);
-	LTRESULT(*GetOptimized2DBlend)(LTSurfaceBlend& blend);
-
-	// Change the color used on Optimized2D surfaces  (i.e. apply a color filter to Optimized2D)
-	LTRESULT(*SetOptimized2DColor)(HLTCOLOR hColor);
-	LTRESULT(*GetOptimized2DColor)(HLTCOLOR& hColor);
-
-	// Returns LT_OK or LT_NOTINITIALIZED or LT_NOTIN3D.
-	LTRESULT(*End3D)();
-
-	// Get a (NULL-terminated) list of supported render modes.
-	RMode* (*GetRenderModes)();
-	void		(*RelinquishRenderModes)(RMode* pModes);
-
-	// Fills in the current render mode.
-	LTRESULT(*GetRenderMode)(RMode* pMode);
-
-	// Goes into the requested render mode.
-	// Returns LT_OK if successful.  Note: it may not have set the _exact_ mode you
-	// requested.  You can check with GetRenderMode() to see what the new mode is.
-	// Returns LT_KEPTSAMEMODE if it couldn't set the mode requested, but
-	// was able to restore the previous mode.
-	// Returns LT_UNABLETORESTOREVIDEO if it couldn't set the mode and couldn't
-	// restore the video mode (in which case it will give a message and shutdown
-	// afterwards).
-	LTRESULT(*SetRenderMode)(RMode* pMode);
-
-	// Shutdown the renderer.  flags is a combination of the RSHUTDOWN_ flags in de_codes.h.
-	// The renderer won't come back until you call SetRenderMode().
-	LTRESULT(*ShutdownRender)(uint32 flags);
-#endif
-};
-
-
-unsigned int* m_RenderLinkStruct;
-
-// END
-
-unsigned int __cdecl ls_Init/*(unsigned int* param_1);//*/(InitStruct* pInitStruct);
-
+// DLL Export Functions
 extern "C"
 {
 	DllExport int entry(unsigned int param_1, int param_2, unsigned int param_3);
 	DllExport void __cdecl FreeModeList(void* param_1);
 	DllExport RMode* GetSupportedModes(void);
-	DllExport void __cdecl RenderDLLSetup(unsigned int param_1);//(LinkStruct* param_1);
+	DllExport void __cdecl RenderDLLSetup(unsigned int param_1);
 };
 
-// Entry
+// Entry -- Not Used?
 int entry(unsigned int param_1, int param_2, unsigned int param_3)
 {
 #if 1
@@ -259,6 +72,11 @@ void __cdecl FreeModeList(void* param_1)
 
 RMode* GetSupportedModes(void)
 {
+	// Boot up OpenRen if we haven't already!
+	if (!g_OpenRen) {
+		g_OpenRen = new OpenRen();
+	}
+
 #if 1
 	RMode* supportedModes = NULL;
 
@@ -333,13 +151,16 @@ RMode* GetSupportedModes(void)
 #endif
 }
 
-
-
 //
 // Probably has to do with function linking
 //
 void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 {
+	// Boot up OpenRen if we haven't already!
+	if (!g_OpenRen) {
+		g_OpenRen = new OpenRen();
+	}
+
 #if 1
 	int debug = true;
 	//LinkStruct ls = *pLinkStruct;
@@ -353,47 +174,47 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	pLinkStruct->UndefinedFunction_10032e50 = NULL;
 	pLinkStruct->UndefinedFunction_10033160 = NULL;
 #else
-#define undefined4 unsigned int
-	//unsigned int param_1[2048] = {0};
-	m_RenderLinkStruct = &param_1;
-	// (unsigned int)(*ls_Init);
-	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*ls_Init);
-	*(undefined4*)(param_1 + 0x70) = NULL;
-	*(undefined4*)(param_1 + 0x74) = NULL;
-	*(undefined4*)(param_1 + 0x78) = NULL;
-	*(undefined4*)(param_1 + 0x7c) = NULL;
-	*(undefined4*)(param_1 + 0x80) = NULL;
-	*(undefined4*)(param_1 + 0x84) = NULL;
-	*(undefined4*)(param_1 + 0x88) = NULL;
-	*(undefined4*)(param_1 + 0x8c) = NULL;
-	*(undefined4*)(param_1 + 0x90) = NULL;
-	*(undefined4*)(param_1 + 0x94) = NULL;
-	*(undefined4*)(param_1 + 0x98) = NULL;
-	*(undefined4*)(param_1 + 0xa0) = NULL;
-	*(undefined4*)(param_1 + 0xa4) = NULL;
-	*(undefined4*)(param_1 + 0xa8) = NULL;
-	*(undefined4*)(param_1 + 0xac) = NULL;
-	*(undefined4*)(param_1 + 0x9c) = NULL;
-	*(undefined4*)(param_1 + 0xdc) = NULL;
-	*(undefined4*)(param_1 + 0xe0) = NULL;
-	*(undefined4*)(param_1 + 0xb0) = NULL;
-	*(undefined4*)(param_1 + 0xb4) = NULL;
-	*(undefined4*)(param_1 + 0xb8) = NULL;
-	*(undefined4*)(param_1 + 0xbc) = NULL;
-	*(undefined4*)(param_1 + 0xc0) = NULL;
-	*(undefined4*)(param_1 + 0xc4) = NULL;
-	*(undefined4*)(param_1 + 200)  = NULL;
-	*(undefined4*)(param_1 + 0xcc) = NULL;
-	*(undefined4*)(param_1 + 0xd0) = NULL;
-	*(undefined4*)(param_1 + 0xd4) = NULL;
-	*(undefined4*)(param_1 + 0xd8) = NULL;
-	*(undefined4*)(param_1 + 0xe4) = NULL;
-	*(undefined4*)(param_1 + 0xe8) = NULL;
-	*(undefined4*)(param_1 + 0xf4) = NULL;
-	*(undefined4*)(param_1 + 0xf8) = NULL;
-	*(undefined4*)(param_1 + 0xec) = NULL;
-	*(undefined4*)(param_1 + 0xfc) = NULL;
-	*(undefined4*)(param_1 + 0xf0) = NULL;
+
+
+	g_OpenRen->m_RenderLinkStruct = &param_1;
+
+	* (undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
+	*(undefined4*)(param_1 + 0x70) = 1;
+	*(undefined4*)(param_1 + 0x74) = 2;
+	*(undefined4*)(param_1 + 0x78) = 3;
+	*(undefined4*)(param_1 + 0x7c) = 4;
+	*(undefined4*)(param_1 + 0x80) = 5;
+	*(undefined4*)(param_1 + 0x84) = 6;
+	*(undefined4*)(param_1 + 0x88) = 7;
+	*(undefined4*)(param_1 + 0x8c) = 8;
+	*(undefined4*)(param_1 + 0x90) = 9;
+	*(undefined4*)(param_1 + 0x94) = 10;
+	*(undefined4*)(param_1 + 0x98) = 11;
+	*(undefined4*)(param_1 + 0xa0) = 12;
+	*(undefined4*)(param_1 + 0xa4) = 13;
+	*(undefined4*)(param_1 + 0xa8) = 14;
+	*(undefined4*)(param_1 + 0xac) = 15;
+	*(undefined4*)(param_1 + 0x9c) = 16;
+	*(undefined4*)(param_1 + 0xdc) = 17;
+	*(undefined4*)(param_1 + 0xe0) = (unsigned int)(*OpenRen::or_Fun18);//18;
+	*(undefined4*)(param_1 + 0xb0) = 19;
+	*(undefined4*)(param_1 + 0xb4) = 20;
+	*(undefined4*)(param_1 + 0xb8) = 21;
+	*(undefined4*)(param_1 + 0xbc) = 22;
+	*(undefined4*)(param_1 + 0xc0) = 23;
+	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_Fun24);//24;
+	*(undefined4*)(param_1 + 200)  = 25;
+	*(undefined4*)(param_1 + 0xcc) = 26;
+	*(undefined4*)(param_1 + 0xd0) = 27;
+	*(undefined4*)(param_1 + 0xd4) = 28;
+	*(undefined4*)(param_1 + 0xd8) = 29;
+	*(undefined4*)(param_1 + 0xe4) = 30;
+	*(undefined4*)(param_1 + 0xe8) = 31;
+	*(undefined4*)(param_1 + 0xf4) = 32;
+	*(undefined4*)(param_1 + 0xf8) = (unsigned int)(*OpenRen::or_Fun33);//33;
+	*(undefined4*)(param_1 + 0xec) = 34;
+	*(undefined4*)(param_1 + 0xfc) = 35;
+	*(undefined4*)(param_1 + 0xf0) = 36;
 #endif
 #else
 	/* 0x21410  3  RenderDLLSetup */
@@ -440,73 +261,182 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 
 }
 
-unsigned int __cdecl ls_Init/*(unsigned int* param_1)*/(InitStruct* pInitStruct)
+unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 {
 	// Magic from the decompiled d3d.ren
 	pInitStruct->magic = 0xd5d;
 
-	SetWindowPos(pInitStruct->hMainWnd, NULL, 0, 0, 1920, 1080, SWP_SHOWWINDOW);
-	bool test = true;
-#if 0
-	// Magic from the decompiled d3d.ren
-	pInitStruct->magic = 0xd5d;
+	// Stuff required for opengl
+	// See: https://gamedev.stackexchange.com/a/119903
+	// Create a hidden window with OpenGL Context enabled
+	// Then share the pixel format with the foreign window
+	SDL_Window* pOpenGLWindow = SDL_CreateWindow("", 0, 0, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
 
-	// Maybe RMode?
-	std::string renderDll = "Open Renderer";
-	std::string internalName = "Some Card";
-	std::string description = "A Video Card";
+	char sBuf[32];
+	sprintf_s<32>(sBuf, "%p", pOpenGLWindow);
 
-	memset(pInitStruct->renderMode.m_RenderDLL, 0, 256);
-	memset(pInitStruct->renderMode.m_InternalName, 0, 128);
-	memset(pInitStruct->renderMode.m_Description, 0, 128);
+	SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, sBuf);
+	g_OpenRen->m_Window = SDL_CreateWindowFrom(pInitStruct->hMainWnd);
+	SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, nullptr);
 
-	renderDll.copy(pInitStruct->renderMode.m_RenderDLL, 256);
-	internalName.copy(pInitStruct->renderMode.m_InternalName, 128);
-	description.copy(pInitStruct->renderMode.m_Description, 128);
+	SDL_DestroyWindow(pOpenGLWindow);
 
-	pInitStruct->renderMode.m_bHardware = true;
-	pInitStruct->renderMode.m_Width = 1280;
-	pInitStruct->renderMode.m_Height = 720;
-	pInitStruct->renderMode.m_BitDepth = 32;
-
-	pInitStruct->renderMode.m_pNext = NULL;
-#endif
-
-#if 0
-	// Register the window class.
-	const wchar_t CLASS_NAME[] = L"Sample Window Class";
-
-	WNDCLASS wc = { };
-
-	wc.lpfnWndProc = NULL;
-	wc.hInstance = NULL;
-	wc.lpszClassName = CLASS_NAME;
-
-	RegisterClass(&wc);
-
-	// Create the window.
-
-	HWND hwnd = CreateWindowEx(
-		0,                              // Optional window styles.
-		CLASS_NAME,                     // Window class
-		L"Learn to Program Windows",    // Window text
-		WS_OVERLAPPEDWINDOW,            // Window style
-
-		// Size and position
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-
-		NULL,       // Parent window    
-		NULL,       // Menu
-		NULL,  // Instance handle
-		NULL        // Additional application data
-	);
-
-	if (hwnd == NULL)
-	{
-		return 0;
-	}
-
-#endif
+	SDL_SetWindowSize(g_OpenRen->m_Window, 1280, 720);
+	SDL_SetWindowPosition(g_OpenRen->m_Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
 	return 0;
+}
+
+//0xe0
+void __cdecl OpenRen::or_Fun18(int param_1)
+{
+	bool test = true;
+
+#if 0
+#define code void
+#define uint unsigned int
+
+	int iVar1;
+	int iVar2;
+	int* piVar3;
+	uint uVar4;
+
+	if ((param_1 != 0) && (piVar3 = *(int**)(param_1 + 0x84), piVar3 != (int*)0x0)) {
+		iVar1 = *piVar3;
+		uVar4 = 0;
+		iVar2 = piVar3[1];
+		if (iVar1 * iVar2 != 0) {
+			while (true) {
+				if ((piVar3 + uVar4 * 7)[8] != 0) {
+					piVar3 = (int*)(piVar3 + uVar4 * 7)[8];
+					//(**(code * *)(*piVar3 + 8))(piVar3);
+				}
+				uVar4 = uVar4 + 1;
+				if ((uint)(iVar1 * iVar2) <= uVar4) break;
+				piVar3 = *(int**)(param_1 + 0x84);
+			}
+		}
+		//FUN_10021cb0(*(LPVOID*)(param_1 + 0x84));
+		*(undefined4*)(param_1 + 0x84) = 0;
+	}
+	return;
+#endif
+}
+
+//0xc4
+void OpenRen::or_Fun24(int param_1)
+{
+	bool test = true;
+
+#if 1
+	// temp
+#if 1
+	// Represents 16 or 32 bit.
+	// 2 = 16, else is 32?
+	unsigned int DAT_1008bf2c = 1;
+
+	// ?
+	unsigned int DAT_1008bf30 = 0;
+	unsigned int DAT_1008bf40 = 0;
+	unsigned int DAT_1008bf50 = 0;
+#endif
+
+	int iVar1;
+	undefined4* puVar2;
+	undefined4* puVar3;
+
+	*(undefined4*)(param_1 + 4) = DAT_1008bf2c;
+	iVar1 = 4;
+	puVar2 = &DAT_1008bf30;
+	puVar3 = (undefined4*)(param_1 + 8);
+	while (iVar1 != 0) {
+		iVar1 = iVar1 + -1;
+		*puVar3 = *puVar2;
+		puVar2 = puVar2 + 1;
+		puVar3 = puVar3 + 1;
+	}
+	iVar1 = 4;
+	puVar2 = &DAT_1008bf40;
+	puVar3 = (undefined4*)(param_1 + 0x18);
+	while (iVar1 != 0) {
+		iVar1 = iVar1 + -1;
+		*puVar3 = *puVar2;
+		puVar2 = puVar2 + 1;
+		puVar3 = puVar3 + 1;
+	}
+	iVar1 = 4;
+	puVar2 = &DAT_1008bf50;
+	puVar3 = (undefined4*)(param_1 + 0x28);
+	while (iVar1 != 0) {
+		iVar1 = iVar1 + -1;
+		*puVar3 = *puVar2;
+		puVar2 = puVar2 + 1;
+		puVar3 = puVar3 + 1;
+	}
+#endif
+
+}
+
+//0xf8
+void OpenRen::or_Fun33()
+{
+#if 1
+#define float10 float
+#define code void
+#define ROUND(x) round(x)
+
+	//0x1c
+	typedef float10 func(unsigned int);
+	func* fn0x1c = (func*) (g_OpenRen->m_RenderLinkStruct + 0x1c);
+
+	// Temp
+#if 1
+	// ? 
+	int* DAT_1008bf90 = NULL;
+
+
+#endif
+
+	int* piVar1;
+	float10 fVar2;
+
+	piVar1 = DAT_1008bf90;
+	if (DAT_1008bf90 != (int*)0x0) {
+		do {
+
+			//((void(*)(void))0x1234)();
+			fVar2 = fn0x1c(piVar1[6]);//(float10)(**(code * *)(DAT_1008cbcc + 0x1c))(piVar1[6]);
+			*(float*)(piVar1 + 1) = (float)fVar2;
+			*piVar1 = (int)ROUND((float)fVar2);
+			if ((int*)piVar1[4] != (int*)0x0) {
+				*(int*)piVar1[4] = piVar1[1];
+			}
+			if ((int*)piVar1[3] != (int*)0x0) {
+				*(int*)piVar1[3] = *piVar1;
+			}
+			piVar1 = (int*)piVar1[7];
+		} while (piVar1 != (int*)0x0);
+	}
+	/*
+	FUN_100316e0();
+	if (DAT_1008cba8 != 0) {
+		DAT_10089400 = 0;
+	}
+	*/
+#endif
+
+
+	return;
+}
+
+OpenRen::OpenRen()
+{
+	m_hMainWnd = NULL;
+	m_RenderLinkStruct = NULL;
+	m_RenderMode = {};
+	m_Window = NULL;
+}
+
+OpenRen::~OpenRen()
+{
 }
