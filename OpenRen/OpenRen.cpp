@@ -29,7 +29,7 @@ int main()
 // Render modes are what are used to describe a video mode/video card.
 struct RMode
 {
-	bool			m_bHardware;
+	unsigned int			m_bHardware;
 
 	char			m_RenderDLL[256];		// What DLL this comes from.		
 	char			m_InternalName[128];	// This is what the DLLs use to identify a card.
@@ -122,6 +122,7 @@ struct LinkStruct {
 	void (*UndefinedFunction_100262f0)(int* piParm1, unsigned int uParm2);
 
 	unsigned int (*UndefinedFunction_10032e50)(void);
+
 #if 0
 	// Flip the screen.  Flags are a combination of FLIPSCREEN_ flags in de_codes.
 		// Returns LT_OK or LT_NOTINITIALIZED.
@@ -183,16 +184,20 @@ struct LinkStruct {
 	LTRESULT(*ShutdownRender)(uint32 flags);
 #endif
 };
+
+
+unsigned int* m_RenderLinkStruct;
+
 // END
 
-unsigned int __cdecl ls_Init(InitStruct* pInitStruct);
+unsigned int __cdecl ls_Init/*(unsigned int* param_1);//*/(InitStruct* pInitStruct);
 
 extern "C"
 {
 	DllExport int entry(unsigned int param_1, int param_2, unsigned int param_3);
 	DllExport void __cdecl FreeModeList(void* param_1);
 	DllExport RMode* GetSupportedModes(void);
-	DllExport void __cdecl RenderDLLSetup(LinkStruct* param_1);
+	DllExport void __cdecl RenderDLLSetup(unsigned int param_1);//(LinkStruct* param_1);
 };
 
 // Entry
@@ -333,12 +338,12 @@ RMode* GetSupportedModes(void)
 //
 // Probably has to do with function linking
 //
-void __cdecl RenderDLLSetup(LinkStruct* pLinkStruct)
+void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 {
 #if 1
 	int debug = true;
-
-#if 1
+	//LinkStruct ls = *pLinkStruct;
+#if 0
 	pLinkStruct->Init = ls_Init;
 	pLinkStruct->Term = NULL;
 	pLinkStruct->CreateSurface = NULL;
@@ -349,9 +354,10 @@ void __cdecl RenderDLLSetup(LinkStruct* pLinkStruct)
 	pLinkStruct->UndefinedFunction_10033160 = NULL;
 #else
 #define undefined4 unsigned int
-	unsigned int param_1[2048] = {0};
-
-	* (undefined4*)(param_1 + 0x6c) = (unsigned int)(*ls_Init);
+	//unsigned int param_1[2048] = {0};
+	m_RenderLinkStruct = &param_1;
+	// (unsigned int)(*ls_Init);
+	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*ls_Init);
 	*(undefined4*)(param_1 + 0x70) = NULL;
 	*(undefined4*)(param_1 + 0x74) = NULL;
 	*(undefined4*)(param_1 + 0x78) = NULL;
@@ -376,7 +382,7 @@ void __cdecl RenderDLLSetup(LinkStruct* pLinkStruct)
 	*(undefined4*)(param_1 + 0xbc) = NULL;
 	*(undefined4*)(param_1 + 0xc0) = NULL;
 	*(undefined4*)(param_1 + 0xc4) = NULL;
-	*(undefined4*)(param_1 + 200) = NULL;
+	*(undefined4*)(param_1 + 200)  = NULL;
 	*(undefined4*)(param_1 + 0xcc) = NULL;
 	*(undefined4*)(param_1 + 0xd0) = NULL;
 	*(undefined4*)(param_1 + 0xd4) = NULL;
@@ -389,8 +395,6 @@ void __cdecl RenderDLLSetup(LinkStruct* pLinkStruct)
 	*(undefined4*)(param_1 + 0xfc) = NULL;
 	*(undefined4*)(param_1 + 0xf0) = NULL;
 #endif
-
-	return;
 #else
 	/* 0x21410  3  RenderDLLSetup */
 	DAT_1008cbcc = param_1;
@@ -436,8 +440,14 @@ void __cdecl RenderDLLSetup(LinkStruct* pLinkStruct)
 
 }
 
-unsigned int __cdecl ls_Init(InitStruct* pInitStruct)
+unsigned int __cdecl ls_Init/*(unsigned int* param_1)*/(InitStruct* pInitStruct)
 {
+	// Magic from the decompiled d3d.ren
+	pInitStruct->magic = 0xd5d;
+
+	SetWindowPos(pInitStruct->hMainWnd, NULL, 0, 0, 1920, 1080, SWP_SHOWWINDOW);
+	bool test = true;
+#if 0
 	// Magic from the decompiled d3d.ren
 	pInitStruct->magic = 0xd5d;
 
@@ -460,8 +470,9 @@ unsigned int __cdecl ls_Init(InitStruct* pInitStruct)
 	pInitStruct->renderMode.m_BitDepth = 32;
 
 	pInitStruct->renderMode.m_pNext = NULL;
+#endif
 
-#if 1
+#if 0
 	// Register the window class.
 	const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
