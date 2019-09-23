@@ -205,7 +205,7 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xc0) = 23;
 	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_Fun24);//24;
 	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_Fun25);//25;
-	*(undefined4*)(param_1 + 0xcc) = 26;
+	*(undefined4*)(param_1 + 0xcc) = (unsigned int)(*OpenRen::or_Fun26);//26;
 	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_Fun27);//27;
 	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_Fun28);//28;
 	*(undefined4*)(param_1 + 0xd8) = 29;
@@ -516,6 +516,12 @@ int** __cdecl OpenRen::or_Fun25(int param_1, int param_2)
 #endif
 	return (int**)2;
 #endif
+}
+//0xcc
+// Most likely DestroySurface
+void __cdecl OpenRen::or_Fun26(int** param_1)
+{
+	return;
 }
 
 //0xd0

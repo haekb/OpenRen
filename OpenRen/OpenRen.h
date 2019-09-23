@@ -191,6 +191,7 @@ public:
 	static void __cdecl or_Flip(unsigned int param_1);
 	static void or_Fun24(unsigned int* param_1);
 	static int** __cdecl or_Fun25(int param_1, int param_2);
+	static void __cdecl or_Fun26(int** param_1);
 	static void or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4);
 	static unsigned int __cdecl or_Fun28(int** param_1);
 	static void or_Fun33();
