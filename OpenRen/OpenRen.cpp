@@ -178,8 +178,8 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 
 	g_OpenRen->m_RenderLinkStruct = &param_1;
 
-	* (undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
-	*(undefined4*)(param_1 + 0x70) = 1;
+	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
+	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Fun1);
 	*(undefined4*)(param_1 + 0x74) = 2;
 	*(undefined4*)(param_1 + 0x78) = 3;
 	*(undefined4*)(param_1 + 0x7c) = 4;
@@ -203,7 +203,7 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xbc) = 22;
 	*(undefined4*)(param_1 + 0xc0) = 23;
 	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_Fun24);//24;
-	*(undefined4*)(param_1 + 200)  = 25;
+	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_Fun25);//25;
 	*(undefined4*)(param_1 + 0xcc) = 26;
 	*(undefined4*)(param_1 + 0xd0) = 27;
 	*(undefined4*)(param_1 + 0xd4) = 28;
@@ -266,6 +266,10 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	// Magic from the decompiled d3d.ren
 	pInitStruct->magic = 0xd5d;
 
+	return 0;
+	
+	// Temp Disabled: SDL_CreateWindowFrom will break the engine's window handling
+	
 	// Stuff required for opengl
 	// See: https://gamedev.stackexchange.com/a/119903
 	// Create a hidden window with OpenGL Context enabled
@@ -285,6 +289,11 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	SDL_SetWindowPosition(g_OpenRen->m_Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
 	return 0;
+}
+
+void OpenRen::or_Fun1()
+{
+	// Maybe Term?
 }
 
 //0xe0
@@ -323,17 +332,18 @@ void __cdecl OpenRen::or_Fun18(int param_1)
 #endif
 }
 
+
+
 //0xc4
-void OpenRen::or_Fun24(int param_1)
+void OpenRen::or_Fun24(unsigned int* param_1)
 {
 	bool test = true;
-
 #if 1
 	// temp
 #if 1
 	// Represents 16 or 32 bit.
 	// 2 = 16, else is 32?
-	unsigned int DAT_1008bf2c = 1;
+	unsigned int DAT_1008bf2c = 2;
 
 	// ?
 	unsigned int DAT_1008bf30 = 0;
@@ -377,6 +387,58 @@ void OpenRen::or_Fun24(int param_1)
 
 }
 
+//200
+// Font or Surface Init?
+int** __cdecl OpenRen::or_Fun25(int param_1, int param_2)
+{
+
+#if 1
+
+#if 1
+	int* DAT_1008bf74 = 0;
+#endif
+
+	int iVar1;
+	int** ppiVar2;
+	undefined4 local_8c;
+	undefined4 local_88;
+	int local_84;
+	int local_80;
+	undefined4 local_24;
+	int* local_10;
+	undefined4 local_c;
+	undefined4 local_8;
+
+#if 0
+	if (((DAT_1008bf74 != (int*)0x0) && (param_1 != 0)) && (param_2 != 0)) {
+		memset(&local_8c, 0, 0x7c);
+		local_84 = param_2;
+		local_8c = 0x7c;
+		local_80 = param_1;
+		local_88 = 7;
+		local_24 = 0x840;
+		iVar1 = (**(code * *)(*DAT_1008bf74 + 0x18))(DAT_1008bf74, &local_8c, &local_10, 0);
+		if (iVar1 == 0) {
+			ppiVar2 = (int**)FUN_10021c50(0x8c);
+			if (ppiVar2 != (int**)0x0) {
+				*ppiVar2 = local_10;
+				local_8 = 0;
+				local_c = 0;
+				(**(code * *)(*local_10 + 0x74))(local_10, 8, &local_c);
+				ppiVar2[0x20] = (int*)0x0;
+				memset(ppiVar2 + 1, 0, 0x7c);
+				ppiVar2[1] = (int*)0x7c;
+				(**(code * *)(*local_10 + 0x58))(local_10, ppiVar2 + 1);
+				return ppiVar2;
+			}
+			(**(code * *)(*local_10 + 8))(local_10);
+		}
+	}
+#endif
+	return NULL;
+#endif
+}
+
 //0xf8
 void OpenRen::or_Fun33()
 {
@@ -391,7 +453,8 @@ void OpenRen::or_Fun33()
 
 	// Temp
 #if 1
-	// ? 
+	// ? Is apparentally `this` in some context?
+	// Passed alongside ModelMinTri
 	int* DAT_1008bf90 = NULL;
 
 

@@ -178,8 +178,10 @@ public:
 	// Render Functions
 	static unsigned int __cdecl or_Init(InitStruct* pInitStruct);
 
+	static void or_Fun1();
 	static void __cdecl or_Fun18(int param_1);
-	static void or_Fun24(int param_1);
+	static void or_Fun24(unsigned int* param_1);
+	static int** __cdecl or_Fun25(int param_1, int param_2);
 	static void or_Fun33();
 	// End Render Functions`
 
