@@ -179,6 +179,8 @@ public:
 	static unsigned int __cdecl or_Init(InitStruct* pInitStruct);
 
 	static void or_Fun1();
+	static void or_Fun2(int iParm1, int iParm2);
+	static void or_Fun3(int iParm1);
 	static void or_Fun6(int* piParm1, unsigned int uParm2);
 	static unsigned int or_Fun8();
 	static unsigned int or_Fun9();
@@ -188,6 +190,7 @@ public:
 	static unsigned int or_Fun14(unsigned int uParam1);
 	static unsigned int __cdecl or_Fun17(int param_1);
 	static void __cdecl or_Fun18(int param_1);
+	static unsigned int or_Fun19();
 	static void __cdecl or_Flip(unsigned int param_1);
 	static void or_Fun24(unsigned int* param_1);
 	static int** __cdecl or_Fun25(int param_1, int param_2);

@@ -181,8 +181,8 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	// 0-index debugging based, sorry!
 	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
 	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Fun1);
-	*(undefined4*)(param_1 + 0x74) = 2;
-	*(undefined4*)(param_1 + 0x78) = 3;
+	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_Fun2);//2;
+	*(undefined4*)(param_1 + 0x78) = (unsigned int)(*OpenRen::or_Fun3);//3;
 	*(undefined4*)(param_1 + 0x7c) = 4;
 	*(undefined4*)(param_1 + 0x80) = 5;
 	*(undefined4*)(param_1 + 0x84) = (unsigned int)(*OpenRen::or_Fun6);//6;
@@ -198,7 +198,7 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0x9c) = 16;
 	*(undefined4*)(param_1 + 0xdc) = (unsigned int)(*OpenRen::or_Fun17);//17;
 	*(undefined4*)(param_1 + 0xe0) = (unsigned int)(*OpenRen::or_Fun18);//18;
-	*(undefined4*)(param_1 + 0xb0) = 19;
+	*(undefined4*)(param_1 + 0xb0) = (unsigned int)(*OpenRen::or_Fun19);//19;
 	*(undefined4*)(param_1 + 0xb4) = 20;
 	*(undefined4*)(param_1 + 0xb8) = 21;
 	*(undefined4*)(param_1 + 0xbc) = (unsigned int)(*OpenRen::or_Flip);//22;
@@ -297,6 +297,20 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 void OpenRen::or_Fun1()
 {
 	// Maybe Term?
+}
+
+//0x74
+// Without this, CreateObject crashes!
+void OpenRen::or_Fun2(int iParm1, int iParm2)
+{
+	return;
+}
+
+//0x78
+// Without this, DestroyObject crashes!
+void OpenRen::or_Fun3(int iParm1)
+{
+	return;
 }
 
 //0x84
@@ -402,6 +416,13 @@ void __cdecl OpenRen::or_Fun18(int param_1)
 	}
 	return;
 #endif
+}
+
+//0xb0
+// Probably RenderObjects related, it's a big function!
+unsigned int OpenRen::or_Fun19()
+{
+	return 0;
 }
 
 //0xbc
