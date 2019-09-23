@@ -187,7 +187,7 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0x80) = 5;
 	*(undefined4*)(param_1 + 0x84) = (unsigned int)(*OpenRen::or_Fun6);//6;
 	*(undefined4*)(param_1 + 0x88) = 7;
-	*(undefined4*)(param_1 + 0x8c) = 8;
+	*(undefined4*)(param_1 + 0x8c) = (unsigned int)(*OpenRen::or_Fun8);//8;
 	*(undefined4*)(param_1 + 0x90) = (unsigned int)(*OpenRen::or_Fun9);//9;
 	*(undefined4*)(param_1 + 0x94) = (unsigned int)(*OpenRen::or_Fun10);//10;
 	*(undefined4*)(param_1 + 0x98) = (unsigned int)(*OpenRen::or_Fun11);//11;
@@ -201,7 +201,7 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xb0) = 19;
 	*(undefined4*)(param_1 + 0xb4) = 20;
 	*(undefined4*)(param_1 + 0xb8) = 21;
-	*(undefined4*)(param_1 + 0xbc) = 22;
+	*(undefined4*)(param_1 + 0xbc) = (unsigned int)(*OpenRen::or_Flip);//22;
 	*(undefined4*)(param_1 + 0xc0) = 23;
 	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_Fun24);//24;
 	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_Fun25);//25;
@@ -307,6 +307,13 @@ void OpenRen::or_Fun6(int* piParm1, unsigned int uParm2)
 	bool test = true;
 }
 
+//0x8c
+// End3D related?
+unsigned int OpenRen::or_Fun8()
+{
+	return 1;
+}
+
 //0x90
 unsigned int OpenRen::or_Fun9()
 {
@@ -395,6 +402,13 @@ void __cdecl OpenRen::or_Fun18(int param_1)
 	}
 	return;
 #endif
+}
+
+//0xbc
+// 99% it's FlipScreen, so we'll just name it so.
+void __cdecl OpenRen::or_Flip(unsigned int param_1)
+{
+	return;
 }
 
 
