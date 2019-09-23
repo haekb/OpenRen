@@ -178,24 +178,25 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 
 	g_OpenRen->m_RenderLinkStruct = &param_1;
 
+	// 0-index debugging based, sorry!
 	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
 	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Fun1);
 	*(undefined4*)(param_1 + 0x74) = 2;
 	*(undefined4*)(param_1 + 0x78) = 3;
 	*(undefined4*)(param_1 + 0x7c) = 4;
 	*(undefined4*)(param_1 + 0x80) = 5;
-	*(undefined4*)(param_1 + 0x84) = 6;
+	*(undefined4*)(param_1 + 0x84) = (unsigned int)(*OpenRen::or_Fun6);//6;
 	*(undefined4*)(param_1 + 0x88) = 7;
 	*(undefined4*)(param_1 + 0x8c) = 8;
-	*(undefined4*)(param_1 + 0x90) = 9;
-	*(undefined4*)(param_1 + 0x94) = 10;
-	*(undefined4*)(param_1 + 0x98) = 11;
-	*(undefined4*)(param_1 + 0xa0) = 12;
+	*(undefined4*)(param_1 + 0x90) = (unsigned int)(*OpenRen::or_Fun9);//9;
+	*(undefined4*)(param_1 + 0x94) = (unsigned int)(*OpenRen::or_Fun10);//10;
+	*(undefined4*)(param_1 + 0x98) = (unsigned int)(*OpenRen::or_Fun11);//11;
+	*(undefined4*)(param_1 + 0xa0) = (unsigned int)(*OpenRen::or_Fun12);//12;
 	*(undefined4*)(param_1 + 0xa4) = 13;
-	*(undefined4*)(param_1 + 0xa8) = 14;
+	*(undefined4*)(param_1 + 0xa8) = (unsigned int)(*OpenRen::or_Fun14);//14;
 	*(undefined4*)(param_1 + 0xac) = 15;
 	*(undefined4*)(param_1 + 0x9c) = 16;
-	*(undefined4*)(param_1 + 0xdc) = 17;
+	*(undefined4*)(param_1 + 0xdc) = (unsigned int)(*OpenRen::or_Fun17);//17;
 	*(undefined4*)(param_1 + 0xe0) = (unsigned int)(*OpenRen::or_Fun18);//18;
 	*(undefined4*)(param_1 + 0xb0) = 19;
 	*(undefined4*)(param_1 + 0xb4) = 20;
@@ -205,14 +206,14 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_Fun24);//24;
 	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_Fun25);//25;
 	*(undefined4*)(param_1 + 0xcc) = 26;
-	*(undefined4*)(param_1 + 0xd0) = 27;
-	*(undefined4*)(param_1 + 0xd4) = 28;
+	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_Fun27);//27;
+	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_Fun28);//28;
 	*(undefined4*)(param_1 + 0xd8) = 29;
 	*(undefined4*)(param_1 + 0xe4) = 30;
 	*(undefined4*)(param_1 + 0xe8) = 31;
 	*(undefined4*)(param_1 + 0xf4) = 32;
 	*(undefined4*)(param_1 + 0xf8) = (unsigned int)(*OpenRen::or_Fun33);//33;
-	*(undefined4*)(param_1 + 0xec) = 34;
+	*(undefined4*)(param_1 + 0xec) = (unsigned int)(*OpenRen::or_Fun34);//34;
 	*(undefined4*)(param_1 + 0xfc) = 35;
 	*(undefined4*)(param_1 + 0xf0) = 36;
 #endif
@@ -266,9 +267,11 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	// Magic from the decompiled d3d.ren
 	pInitStruct->magic = 0xd5d;
 
+	g_OpenRen->m_Window = SDL_CreateWindow("Test", 0, 0, 800, 600, SDL_WINDOW_OPENGL);
+
+	// Disable if you have CShell with SDL Window Creation!
 	return 0;
 	
-	// Temp Disabled: SDL_CreateWindowFrom will break the engine's window handling
 	
 	// Stuff required for opengl
 	// See: https://gamedev.stackexchange.com/a/119903
@@ -294,6 +297,68 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 void OpenRen::or_Fun1()
 {
 	// Maybe Term?
+}
+
+//0x84
+// Big function, might be draw related?
+// Gets called if or_Fun9 returns 0
+void OpenRen::or_Fun6(int* piParm1, unsigned int uParm2)
+{
+	bool test = true;
+}
+
+//0x90
+unsigned int OpenRen::or_Fun9()
+{
+#if 0
+	// Basically 0?
+	return DAT_1008d7c8;
+#endif
+	return 1337;
+}
+
+//0x94
+// Most likely StartOptimized2D
+unsigned int OpenRen::or_Fun10()
+{
+	return 1;
+}
+
+//0x98
+// Most likely EndOptimized2D
+void OpenRen::or_Fun11()
+{
+	return;
+}
+
+//0xa0
+// Possibly draw related. gets called when or_Fun9 returns non-zero.
+unsigned int __cdecl OpenRen::or_Fun12(int param_1)
+{
+	return 0;
+}
+
+//0xa8
+// Draw related
+unsigned int OpenRen::or_Fun14(unsigned int uParam1)
+{
+#if 0
+	DAT_10089448 = uParm1 & 0xffffff | 0xff000000;
+#endif
+
+	unsigned int temp = uParam1 & 0xffffff | 0xff000000;
+
+	// Always returns 1
+	return 1;
+}
+
+//0xdc
+// Optimize Surface?
+// When not linked, crashes on `g_pLTClient->OptimizeSurface`
+// Big function eep! -- Takes in Surface Pointer
+unsigned int __cdecl OpenRen::or_Fun17(int param_1)
+{
+	return 0;
 }
 
 //0xe0
@@ -435,8 +500,55 @@ int** __cdecl OpenRen::or_Fun25(int param_1, int param_2)
 		}
 	}
 #endif
-	return NULL;
+	return (int**)2;
 #endif
+}
+
+//0xd0
+void OpenRen::or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4)
+{
+#if 0
+	if (iParm1 != 0) {
+		if (puParm2 != (undefined4*)0x0) {
+			*puParm2 = *(undefined4*)(iParm1 + 0x10);
+		}
+		if (puParm3 != (undefined4*)0x0) {
+			*puParm3 = *(undefined4*)(iParm1 + 0xc);
+		}
+		if (puParm4 != (undefined4*)0x0) {
+			*puParm4 = *(undefined4*)(iParm1 + 0x14);
+		}
+	}
+#endif
+}
+
+//0xd4
+// Does something with a surface
+// offset 100 (dec: 256) holds a function? 
+unsigned int __cdecl OpenRen::or_Fun28(int** param_1)
+{
+#if 0
+
+
+
+	int iVar1;
+	undefined4 local_80[9];
+	undefined4 local_5c = 0;
+
+	if (param_1 != (int**)0x0) {
+		//100
+		typedef int func(int*, int, unsigned int*, int, int);
+		func* fn100 = (func*)(**param_1 + 100);
+
+		local_80[0] = 0x7c;
+		iVar1 = fn100(*param_1, 0, local_80, 0, 0);//(**(code * *)(**param_1 + 100))(*param_1, 0, local_80, 0, 0);
+		if (iVar1 == 0) {
+			return local_5c;
+		}
+	}
+	return 0;
+#endif
+	return 0;
 }
 
 //0xf8
@@ -489,6 +601,13 @@ void OpenRen::or_Fun33()
 #endif
 
 
+	return;
+}
+
+//0xec
+// Related to DrawSurfaceToSurface
+void OpenRen::or_Fun34(int* piParm1)
+{
 	return;
 }
 
