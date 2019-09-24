@@ -3,6 +3,7 @@
 #include <string>
 #include <Windows.h>
 #include <SDL.h>
+#include <vector>
 
 #define DllExport   __declspec( dllexport )
 
@@ -170,7 +171,7 @@ struct LinkStruct {
 };
 
 class OpenRen {
-
+	typedef int** hSurf;
 public:
 	OpenRen();
 	~OpenRen();
@@ -197,6 +198,7 @@ public:
 	static void __cdecl or_Fun26(int** param_1);
 	static void or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4);
 	static unsigned int __cdecl or_Fun28(int** param_1);
+	static void or_Fun29(int** param_1);
 	static void or_Fun33();
 	static void or_Fun34(int* piParm1);
 	// End Render Functions`
@@ -207,6 +209,10 @@ public:
 	HWND m_hMainWnd;
 
 	SDL_Window* m_Window;
+	// temp!
+	SDL_Renderer* m_Renderer;
+	std::vector<SDL_Surface*> m_SurfaceCache;
+	SDL_Texture* m_MainTexture;
 private:
 	
 

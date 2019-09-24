@@ -208,7 +208,7 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xcc) = (unsigned int)(*OpenRen::or_Fun26);//26;
 	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_Fun27);//27;
 	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_Fun28);//28;
-	*(undefined4*)(param_1 + 0xd8) = 29;
+	*(undefined4*)(param_1 + 0xd8) = (unsigned int)(*OpenRen::or_Fun29);//29;
 	*(undefined4*)(param_1 + 0xe4) = 30;
 	*(undefined4*)(param_1 + 0xe8) = 31;
 	*(undefined4*)(param_1 + 0xf4) = 32;
@@ -267,7 +267,19 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	// Magic from the decompiled d3d.ren
 	pInitStruct->magic = 0xd5d;
 
-	g_OpenRen->m_Window = SDL_CreateWindow("Test", 0, 0, 800, 600, SDL_WINDOW_OPENGL);
+	SDL_Init(SDL_INIT_VIDEO);
+
+	g_OpenRen->m_Window = SDL_CreateWindow("Test", 32, 32, 800, 600, SDL_WINDOW_OPENGL);
+
+	// temp!
+	g_OpenRen->m_Renderer = SDL_CreateRenderer(g_OpenRen->m_Window, -1, 0);
+
+	SDL_SetRenderDrawColor(g_OpenRen->m_Renderer, 255, 128, 0, 255);
+	SDL_RenderClear(g_OpenRen->m_Renderer);
+	SDL_RenderPresent(g_OpenRen->m_Renderer);
+	SDL_SetRenderDrawColor(g_OpenRen->m_Renderer, 0, 128, 255, 255);
+
+	g_OpenRen->m_MainTexture = NULL;
 
 	// Disable if you have CShell with SDL Window Creation!
 	return 0;
@@ -335,7 +347,7 @@ unsigned int OpenRen::or_Fun9()
 	// Basically 0?
 	return DAT_1008d7c8;
 #endif
-	return 1337;
+	return 0;
 }
 
 //0x94
@@ -354,8 +366,13 @@ void OpenRen::or_Fun11()
 
 //0xa0
 // Possibly draw related. gets called when or_Fun9 returns non-zero.
+// Looks like a switch statement
 unsigned int __cdecl OpenRen::or_Fun12(int param_1)
 {
+#if 1
+
+
+#endif
 	return 0;
 }
 
@@ -429,6 +446,15 @@ unsigned int OpenRen::or_Fun19()
 // 99% it's FlipScreen, so we'll just name it so.
 void __cdecl OpenRen::or_Flip(unsigned int param_1)
 {
+	SDL_RenderClear(g_OpenRen->m_Renderer);
+
+	if (g_OpenRen->m_MainTexture == NULL) {
+		return;
+	}
+
+	SDL_RenderCopy(g_OpenRen->m_Renderer, g_OpenRen->m_MainTexture, NULL, NULL);
+
+	SDL_RenderPresent(g_OpenRen->m_Renderer);
 	return;
 }
 
@@ -437,7 +463,8 @@ void __cdecl OpenRen::or_Flip(unsigned int param_1)
 //0xc4
 void OpenRen::or_Fun24(unsigned int* param_1)
 {
-	bool test = true;
+
+	//bool test = true;
 #if 1
 	// temp
 #if 1
@@ -491,7 +518,16 @@ void OpenRen::or_Fun24(unsigned int* param_1)
 // Font or Surface Init?
 int** __cdecl OpenRen::or_Fun25(int param_1, int param_2)
 {
+	Uint32 rmask, gmask, bmask, amask;
+	rmask = 0xff000000;
+	gmask = 0x00ff0000;
+	bmask = 0x0000ff00;
+	amask = 0x000000ff;
 
+	SDL_Surface* surface = SDL_CreateRGBSurface(0, param_1, param_2, 16, 0, 0, 0, 0);
+	g_OpenRen->m_SurfaceCache.push_back(surface);
+
+	return (int**)surface;
 #if 1
 
 #if 1
@@ -546,8 +582,24 @@ void __cdecl OpenRen::or_Fun26(int** param_1)
 }
 
 //0xd0
+// Called after or_Fun25 (SurfaceInit)
+// Might be a lock? Param 1 is a pointer address, 2 is width, 3 is height, and 4 is pitch?
 void OpenRen::or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4)
 {
+	if (iParm1 == NULL) {
+		return;
+	}
+	SDL_Surface* surface = (SDL_Surface*)iParm1;
+
+	if (surface == NULL) {
+		return;
+	}
+
+	// Maybe it's surface info? Odd how it already has the info filled in :thinking:
+	*puParm2 = surface->w;
+	*puParm3 = surface->h;
+	*puParm4 = surface->pitch;
+
 #if 0
 	if (iParm1 != 0) {
 		if (puParm2 != (undefined4*)0x0) {
@@ -568,6 +620,19 @@ void OpenRen::or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, und
 // offset 100 (dec: 256) holds a function? 
 unsigned int __cdecl OpenRen::or_Fun28(int** param_1)
 {
+	
+
+	SDL_Surface* surface = (SDL_Surface*) param_1;
+
+	if (surface == NULL) {
+		return 0;
+	}
+	SDL_LockSurface(surface);
+
+	//test
+	//memset(surface->pixels, SDL_MapRGBA(surface->format, 255, 128, 128, 255), surface->pitch * surface->h);
+
+	return (unsigned int)surface->pixels;
 #if 0
 
 
@@ -590,6 +655,28 @@ unsigned int __cdecl OpenRen::or_Fun28(int** param_1)
 	return 0;
 #endif
 	return 0;
+}
+
+//0xd8
+// Takes in surface pointer and calls a function offset 128 from param_1
+// with a second parameter of 0
+void OpenRen::or_Fun29(int** param_1)
+{
+	if (param_1 == NULL) {
+		return;
+	}
+
+	SDL_Surface* surface = (SDL_Surface*)param_1;
+	SDL_UnlockSurface(surface);
+
+	if (g_OpenRen->m_MainTexture)
+	{
+		SDL_DestroyTexture(g_OpenRen->m_MainTexture);
+		g_OpenRen->m_MainTexture = NULL;
+	}
+
+	g_OpenRen->m_MainTexture = SDL_CreateTextureFromSurface(g_OpenRen->m_Renderer, surface);
+	//or_Flip(0);
 }
 
 //0xf8
