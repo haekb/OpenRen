@@ -182,7 +182,9 @@ public:
 	static void or_Fun1();
 	static void or_Fun2(int iParm1, int iParm2);
 	static void or_Fun3(int iParm1);
+	static unsigned int** or_Fun4(unsigned int* puParm1);
 	static void or_Fun6(int* piParm1, unsigned int uParm2);
+	static unsigned int or_Fun7();
 	static unsigned int or_Fun8();
 	static unsigned int or_Fun9();
 	static unsigned int or_Fun10();

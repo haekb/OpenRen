@@ -183,10 +183,10 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Fun1);
 	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_Fun2);//2;
 	*(undefined4*)(param_1 + 0x78) = (unsigned int)(*OpenRen::or_Fun3);//3;
-	*(undefined4*)(param_1 + 0x7c) = 4;
+	*(undefined4*)(param_1 + 0x7c) = (unsigned int)(*OpenRen::or_Fun4);//4;
 	*(undefined4*)(param_1 + 0x80) = 5;
 	*(undefined4*)(param_1 + 0x84) = (unsigned int)(*OpenRen::or_Fun6);//6;
-	*(undefined4*)(param_1 + 0x88) = 7;
+	*(undefined4*)(param_1 + 0x88) = (unsigned int)(*OpenRen::or_Fun7);//7;
 	*(undefined4*)(param_1 + 0x8c) = (unsigned int)(*OpenRen::or_Fun8);//8;
 	*(undefined4*)(param_1 + 0x90) = (unsigned int)(*OpenRen::or_Fun9);//9;
 	*(undefined4*)(param_1 + 0x94) = (unsigned int)(*OpenRen::or_Fun10);//10;
@@ -325,12 +325,67 @@ void OpenRen::or_Fun3(int iParm1)
 	return;
 }
 
+//0x7c
+// Lightmap related?
+unsigned int** OpenRen::or_Fun4(unsigned int* puParm1)
+{
+	
+#if 0
+	undefined* puVar1;
+	undefined** ppuVar2;
+	int iVar3;
+
+	ppuVar2 = (undefined * *)FUN_10021c50(0x10);
+	if (ppuVar2 != (undefined * *)0x0) {
+		puVar1 = (undefined*)* puParm1;
+		*(undefined2*)(ppuVar2 + 3) = 0xffff;
+		ppuVar2[2] = puVar1;
+		if (DAT_1008ca34 == 0) {
+			if (DAT_1008d978 != 0) {
+				iVar3 = FUN_1006cc90(ppuVar2);
+				if (iVar3 == 0) {
+					FUN_10021d60(0, (byte*)s_Warning:_unable_to_create_lightm_100a8f70);
+					DAT_1008d978 = 0;
+				}
+			}
+		}
+		else {
+			FUN_10021d10((byte*)s_Warning:_NoLMPages_is_TRUE_100a8f50);
+		}
+		return ppuVar2;
+	}
+	return (undefined * *)0;
+#endif
+
+	return (unsigned int**)0;
+}
+
 //0x84
 // Big function, might be draw related?
 // Gets called if or_Fun9 returns 0
 void OpenRen::or_Fun6(int* piParm1, unsigned int uParm2)
 {
 	bool test = true;
+}
+
+//0x88
+// EndOptimized2D ?
+unsigned int OpenRen::or_Fun7()
+{
+#if 0
+	int iVar1;
+
+	if ((DAT_1008d7c8 == 0) && (DAT_1008d988 != (int*)0x0)) {
+		iVar1 = (**(code * *)(*DAT_1008d988 + 0x14))(DAT_1008d988);
+		if (iVar1 != 0) {
+			return 0;
+		}
+		DAT_1008d7c8 = 1;
+		return 1;
+	}
+	return 0;
+#endif
+	return 0;
 }
 
 //0x8c
@@ -524,7 +579,7 @@ int** __cdecl OpenRen::or_Fun25(int param_1, int param_2)
 	bmask = 0x0000ff00;
 	amask = 0x000000ff;
 
-	SDL_Surface* surface = SDL_CreateRGBSurface(0, param_1, param_2, 16, 0, 0, 0, 0);
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, param_1, param_2, 32, SDL_PIXELFORMAT_RGB332);//SDL_PIXELFORMAT_RGB332);
 	g_OpenRen->m_SurfaceCache.push_back(surface);
 
 	return (int**)surface;
