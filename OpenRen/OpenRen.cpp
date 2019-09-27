@@ -207,9 +207,9 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_Fun25);//25;
 	*(undefined4*)(param_1 + 0xcc) = (unsigned int)(*OpenRen::or_Fun26);//26;
 	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_Fun27);//27;
-	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_Fun28);//28;
-	*(undefined4*)(param_1 + 0xd8) = (unsigned int)(*OpenRen::or_Fun29);//29;
-	*(undefined4*)(param_1 + 0xe4) = 30;
+	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_LockSurface);//28;
+	*(undefined4*)(param_1 + 0xd8) = (unsigned int)(*OpenRen::or_UnlockSurface);//29;
+	*(undefined4*)(param_1 + 0xe4) = (unsigned int)(*OpenRen::or_Fun30);//30;
 	*(undefined4*)(param_1 + 0xe8) = 31;
 	*(undefined4*)(param_1 + 0xf4) = 32;
 	*(undefined4*)(param_1 + 0xf8) = (unsigned int)(*OpenRen::or_Fun33);//33;
@@ -269,7 +269,7 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	g_OpenRen->m_Window = SDL_CreateWindow("Test", 32, 32, 800, 600, SDL_WINDOW_OPENGL);
+	g_OpenRen->m_Window = SDL_CreateWindow("Test", 32, 32, 1280, 720, SDL_WINDOW_OPENGL);
 
 	// temp!
 	g_OpenRen->m_Renderer = SDL_CreateRenderer(g_OpenRen->m_Window, -1, 0);
@@ -278,6 +278,8 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	SDL_RenderClear(g_OpenRen->m_Renderer);
 	SDL_RenderPresent(g_OpenRen->m_Renderer);
 	SDL_SetRenderDrawColor(g_OpenRen->m_Renderer, 0, 128, 255, 255);
+
+	g_OpenRen->m_ScreenSurface = SDL_CreateRGBSurfaceWithFormat(0, 1280, 720, 32, SDL_PIXELFORMAT_RGB888);
 
 	g_OpenRen->m_MainTexture = NULL;
 
@@ -438,7 +440,7 @@ unsigned int OpenRen::or_Fun14(unsigned int uParam1)
 #if 0
 	DAT_10089448 = uParm1 & 0xffffff | 0xff000000;
 #endif
-
+	// 255?
 	unsigned int temp = uParam1 & 0xffffff | 0xff000000;
 
 	// Always returns 1
@@ -503,19 +505,31 @@ void __cdecl OpenRen::or_Flip(unsigned int param_1)
 {
 	SDL_RenderClear(g_OpenRen->m_Renderer);
 
-	if (g_OpenRen->m_MainTexture == NULL) {
+	if (g_OpenRen->m_ScreenSurface == NULL) {
 		return;
 	}
 
-	SDL_RenderCopy(g_OpenRen->m_Renderer, g_OpenRen->m_MainTexture, NULL, NULL);
+	SDL_SaveBMP(g_OpenRen->m_ScreenSurface, "Screen.bmp");
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(g_OpenRen->m_Renderer, g_OpenRen->m_ScreenSurface);
+
+	SDL_RenderCopy(g_OpenRen->m_Renderer, texture, NULL, NULL);
 
 	SDL_RenderPresent(g_OpenRen->m_Renderer);
+
+
+	if (texture != NULL) {
+		SDL_DestroyTexture(texture);
+	}
+
+	SDL_FillRect(g_OpenRen->m_ScreenSurface, NULL, 0x000000);
+
 	return;
 }
 
 
 
 //0xc4
+// Something to do with display format?
 void OpenRen::or_Fun24(unsigned int* param_1)
 {
 
@@ -525,12 +539,13 @@ void OpenRen::or_Fun24(unsigned int* param_1)
 #if 1
 	// Represents 16 or 32 bit.
 	// 2 = 16, else is 32?
-	unsigned int DAT_1008bf2c = 2;
+	// d3d.ren uses 3
+	unsigned int DAT_1008bf2c = 3;
 
-	// ?
+	// Cheat Engine tells me this is init'd like this :thinking:
 	unsigned int DAT_1008bf30 = 0;
 	unsigned int DAT_1008bf40 = 0;
-	unsigned int DAT_1008bf50 = 0;
+	unsigned int DAT_1008bf50 = 32;
 #endif
 
 	int iVar1;
@@ -574,60 +589,18 @@ void OpenRen::or_Fun24(unsigned int* param_1)
 int** __cdecl OpenRen::or_Fun25(int param_1, int param_2)
 {
 	Uint32 rmask, gmask, bmask, amask;
-	rmask = 0xff000000;
-	gmask = 0x00ff0000;
-	bmask = 0x0000ff00;
-	amask = 0x000000ff;
+	rmask = 0x00ff0000;
+	gmask = 0x0000ff00;
+	bmask = 0x000000ff;
+	amask = 0x00000000;
 
-	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, param_1, param_2, 32, SDL_PIXELFORMAT_RGB332);//SDL_PIXELFORMAT_RGB332);
+	//SDL_Surface* surface = SDL_CreateRGBSurface(0, param_1, param_2, 24, rmask, gmask, bmask, amask);
+
+
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, param_1, param_2, 32, SDL_PIXELFORMAT_RGB888);//SDL_PIXELFORMAT_RGB332);
 	g_OpenRen->m_SurfaceCache.push_back(surface);
 
 	return (int**)surface;
-#if 1
-
-#if 1
-	int* DAT_1008bf74 = 0;
-#endif
-
-	int iVar1;
-	int** ppiVar2;
-	undefined4 local_8c;
-	undefined4 local_88;
-	int local_84;
-	int local_80;
-	undefined4 local_24;
-	int* local_10;
-	undefined4 local_c;
-	undefined4 local_8;
-
-#if 0
-	if (((DAT_1008bf74 != (int*)0x0) && (param_1 != 0)) && (param_2 != 0)) {
-		memset(&local_8c, 0, 0x7c);
-		local_84 = param_2;
-		local_8c = 0x7c;
-		local_80 = param_1;
-		local_88 = 7;
-		local_24 = 0x840;
-		iVar1 = (**(code * *)(*DAT_1008bf74 + 0x18))(DAT_1008bf74, &local_8c, &local_10, 0);
-		if (iVar1 == 0) {
-			ppiVar2 = (int**)FUN_10021c50(0x8c);
-			if (ppiVar2 != (int**)0x0) {
-				*ppiVar2 = local_10;
-				local_8 = 0;
-				local_c = 0;
-				(**(code * *)(*local_10 + 0x74))(local_10, 8, &local_c);
-				ppiVar2[0x20] = (int*)0x0;
-				memset(ppiVar2 + 1, 0, 0x7c);
-				ppiVar2[1] = (int*)0x7c;
-				(**(code * *)(*local_10 + 0x58))(local_10, ppiVar2 + 1);
-				return ppiVar2;
-			}
-			(**(code * *)(*local_10 + 8))(local_10);
-		}
-	}
-#endif
-	return (int**)2;
-#endif
 }
 //0xcc
 // Most likely DestroySurface
@@ -670,68 +643,49 @@ void OpenRen::or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, und
 #endif
 }
 
+static void* pixelSurface;
+
 //0xd4
 // Does something with a surface
 // offset 100 (dec: 256) holds a function? 
-unsigned int __cdecl OpenRen::or_Fun28(int** param_1)
+// Lock Surface!
+unsigned int __cdecl OpenRen::or_LockSurface(hSurf param_1)
 {
-	
-
 	SDL_Surface* surface = (SDL_Surface*) param_1;
 
 	if (surface == NULL) {
 		return 0;
 	}
-	SDL_LockSurface(surface);
+	//SDL_LockSurface(surface);
 
-	//test
-	//memset(surface->pixels, SDL_MapRGBA(surface->format, 255, 128, 128, 255), surface->pitch * surface->h);
+
+	//pixelSurface = malloc(surface->w * surface->h * 3);
 
 	return (unsigned int)surface->pixels;
-#if 0
-
-
-
-	int iVar1;
-	undefined4 local_80[9];
-	undefined4 local_5c = 0;
-
-	if (param_1 != (int**)0x0) {
-		//100
-		typedef int func(int*, int, unsigned int*, int, int);
-		func* fn100 = (func*)(**param_1 + 100);
-
-		local_80[0] = 0x7c;
-		iVar1 = fn100(*param_1, 0, local_80, 0, 0);//(**(code * *)(**param_1 + 100))(*param_1, 0, local_80, 0, 0);
-		if (iVar1 == 0) {
-			return local_5c;
-		}
-	}
-	return 0;
-#endif
-	return 0;
 }
-
 //0xd8
 // Takes in surface pointer and calls a function offset 128 from param_1
 // with a second parameter of 0
-void OpenRen::or_Fun29(int** param_1)
+void OpenRen::or_UnlockSurface(hSurf param_1)
 {
 	if (param_1 == NULL) {
 		return;
 	}
 
+
 	SDL_Surface* surface = (SDL_Surface*)param_1;
-	SDL_UnlockSurface(surface);
 
-	if (g_OpenRen->m_MainTexture)
-	{
-		SDL_DestroyTexture(g_OpenRen->m_MainTexture);
-		g_OpenRen->m_MainTexture = NULL;
-	}
+	
+	//SDL_Surface* test = SDL_CreateRGBSurfaceWithFormatFrom(pixelSurface, surface->w, surface->h, 32, surface->pitch, SDL_PIXELFORMAT_RGB888);
+	//SDL_SaveBMP(test, "test.bmp");
+	//SDL_UnlockSurface(surface);
+}
 
-	g_OpenRen->m_MainTexture = SDL_CreateTextureFromSurface(g_OpenRen->m_Renderer, surface);
-	//or_Flip(0);
+//0xe4
+// No clue! Hasn't been called yet.
+unsigned int __cdecl OpenRen::or_Fun30(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4* param_5, undefined4* param_6)
+{
+	return 0;
 }
 
 //0xf8
@@ -787,10 +741,46 @@ void OpenRen::or_Fun33()
 	return;
 }
 
+
 //0xec
 // Related to DrawSurfaceToSurface
+// Draw to Screen?
 void OpenRen::or_Fun34(int* piParm1)
 {
+#if 0
+	// 3d mode?
+	if (DAT_1008d7c8 != 0) {
+		// Throw = "Warning: drawing a nonoptimized surface while in 3D mode."
+	}
+
+#endif
+	SDL_Surface* surface = (SDL_Surface*)* piParm1;
+	
+	// Looks like clipping
+	int* clipPtr1 = (int*)piParm1[3];
+	int* clipPtr2 = (int*)piParm1[4];
+
+	int* local_8c = *(int**)(*piParm1 + 0x84);
+
+	double local_3c = (double)(clipPtr1[2] - *clipPtr1);
+	double local_44 = (double)(clipPtr1[3] - clipPtr1[1]);
+	double local_4c = (double)(clipPtr2[2] - *clipPtr2);
+	double local_54 = (double)(clipPtr2[3] - clipPtr2[1]);
+
+	LTRect* src = (LTRect*)clipPtr1;
+	LTRect* dst = (LTRect*)clipPtr2;
+
+	SDL_Rect sdlSrc = { src->left, src->top, src->right, src->bottom };
+	SDL_Rect sdlDst = { dst->left, dst->top, dst->right, dst->bottom };
+
+	//SDL_Surface* surfaceConv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);//SDL_CreateRGBSurfaceWithFormatFrom(surface->pixels, surface->w, surface->h, 8, surface->pitch, surface->format->format);
+	//SDL_ConvertSurfaceFormat(surfaceConv, SDL_PIXELFORMAT_RGB888, 0);
+	int result = SDL_BlitSurface(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
+
+	if (result != 0) {
+		const char* error = SDL_GetError();
+	}
+
 	return;
 }
 

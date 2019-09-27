@@ -23,6 +23,20 @@ struct RMode
 	unsigned int	m_Width, m_Height, m_BitDepth;
 	RMode* m_pNext;
 };
+class LTRect
+{
+public:
+	LTRect(int l = 0, int t = 0, int r = 0, int b = 0) : left(l), top(t), right(r), bottom(b) {}
+	inline void	Init(int inLeft, int inTop, int inRight, int inBottom)
+	{
+		left = inLeft;
+		top = inTop;
+		right = inRight;
+		bottom = inBottom;
+	}
+
+	int left, top, right, bottom;
+};
 // END NOLF
 
 // Jake's guessing iunno
@@ -199,8 +213,9 @@ public:
 	static int** __cdecl or_Fun25(int param_1, int param_2);
 	static void __cdecl or_Fun26(int** param_1);
 	static void or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4);
-	static unsigned int __cdecl or_Fun28(int** param_1);
-	static void or_Fun29(int** param_1);
+	static unsigned int __cdecl or_LockSurface(hSurf param_1);
+	static void or_UnlockSurface(hSurf param_1);
+	static unsigned int __cdecl or_Fun30(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4* param_5, undefined4* param_6);
 	static void or_Fun33();
 	static void or_Fun34(int* piParm1);
 	// End Render Functions`
@@ -215,6 +230,7 @@ public:
 	SDL_Renderer* m_Renderer;
 	std::vector<SDL_Surface*> m_SurfaceCache;
 	SDL_Texture* m_MainTexture;
+	SDL_Surface* m_ScreenSurface;
 private:
 	
 
