@@ -100,7 +100,7 @@ RMode* GetSupportedModes(void)
 	internalName.copy(supportedModes->m_InternalName, 128);
 	description.copy(supportedModes->m_Description, 128);
 
-	supportedModes->m_bHardware = true;
+	supportedModes->m_bHardware = false;
 	supportedModes->m_Width = 1280;
 	supportedModes->m_Height = 720;
 	supportedModes->m_BitDepth = 32;
@@ -174,9 +174,9 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	pLinkStruct->UndefinedFunction_10032e50 = NULL;
 	pLinkStruct->UndefinedFunction_10033160 = NULL;
 #else
+	int* test = (int*)param_1;
 
-
-	g_OpenRen->m_RenderLinkStruct = &param_1;
+	g_OpenRen->m_RenderLinkStruct = (unsigned int*)param_1;
 
 	// 0-index debugging based, sorry!
 	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
@@ -264,6 +264,10 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 
 unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 {
+	if (g_OpenRen->m_Window) {
+		return 0;
+	}
+
 	// Magic from the decompiled d3d.ren
 	pInitStruct->magic = 0xd5d;
 
@@ -530,29 +534,48 @@ void __cdecl OpenRen::or_Flip(unsigned int param_1)
 
 //0xc4
 // Something to do with display format?
+
+struct pixelFormat {
+	unsigned int unknown;
+	unsigned int mode; 
+	unsigned int first[4];
+	unsigned int second[4];
+	unsigned int third[4];
+	// Dunno what's next!
+};
+
 void OpenRen::or_Fun24(unsigned int* param_1)
 {
+	// Fills it according to the memory dumps I've seen.
+	pixelFormat* pf = (pixelFormat*)param_1;
 
-	//bool test = true;
-#if 1
-	// temp
-#if 1
-	// Represents 16 or 32 bit.
-	// 2 = 16, else is 32?
-	// d3d.ren uses 3
-	unsigned int DAT_1008bf2c = 3;
+	// It's either 2 or 3, 2 is 16bit according to some decompiled debug funcs, and 3 is from mem dump
+	pf->mode = 3;
 
-	// Cheat Engine tells me this is init'd like this :thinking:
-	unsigned int DAT_1008bf30 = 0;
-	unsigned int DAT_1008bf40 = 0;
-	unsigned int DAT_1008bf50 = 32;
-#endif
+	// Masks?
+	pf->first[0] = 0;
+	pf->first[1] = 16711680;
+	pf->first[2] = 65280;
+	pf->first[3] = 255;
 
+	pf->second[0] = 0;
+	pf->second[1] = 8;
+	pf->second[2] = 8;
+	pf->second[3] = 8;
+
+	pf->third[0] = 32;
+	pf->third[1] = 16;
+	pf->third[2] = 8;
+	pf->third[3] = 0;
+
+	return;
+#if 0
 	int iVar1;
 	undefined4* puVar2;
 	undefined4* puVar3;
 
 	*(undefined4*)(param_1 + 4) = DAT_1008bf2c;
+
 	iVar1 = 4;
 	puVar2 = &DAT_1008bf30;
 	puVar3 = (undefined4*)(param_1 + 8);
@@ -581,8 +604,41 @@ void OpenRen::or_Fun24(unsigned int* param_1)
 		puVar3 = puVar3 + 1;
 	}
 #endif
-
 }
+#if 0
+// AVP2, `this` is param_1, param_1 is a DAT var
+void __thiscall FUN_1001ded2(void* this, int param_1)
+{
+	undefined4* puVar1;
+	int iVar2;
+	int iVar3;
+
+	iVar2 = 4;
+	*(undefined4*)((int)this + 4) = *(undefined4*)(param_1 + 4);
+	puVar1 = (undefined4*)((int)this + 8);
+	param_1 = param_1 - (int)this;
+	iVar3 = iVar2;
+	do {
+		*puVar1 = *(undefined4*)(param_1 + (int)puVar1);
+		puVar1 = puVar1 + 1;
+		iVar3 = iVar3 + -1;
+	} while (iVar3 != 0);
+	puVar1 = (undefined4*)((int)this + 0x18);
+	iVar3 = iVar2;
+	do {
+		*puVar1 = *(undefined4*)((int)puVar1 + param_1);
+		puVar1 = puVar1 + 1;
+		iVar3 = iVar3 + -1;
+	} while (iVar3 != 0);
+	puVar1 = (undefined4*)((int)this + 0x28);
+	do {
+		*puVar1 = *(undefined4*)((int)puVar1 + param_1);
+		puVar1 = puVar1 + 1;
+		iVar2 = iVar2 + -1;
+	} while (iVar2 != 0);
+	return;
+}
+#endif
 
 //200
 // Font or Surface Init?
@@ -644,7 +700,7 @@ void OpenRen::or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, und
 }
 
 static void* pixelSurface;
-
+static void* after;
 //0xd4
 // Does something with a surface
 // offset 100 (dec: 256) holds a function? 
@@ -659,7 +715,8 @@ unsigned int __cdecl OpenRen::or_LockSurface(hSurf param_1)
 	//SDL_LockSurface(surface);
 
 
-	//pixelSurface = malloc(surface->w * surface->h * 3);
+	//pixelSurface = malloc(32 * 32 * 3);
+	//memset(pixelSurface, 0, 32 * 32 * 3);
 
 	return (unsigned int)surface->pixels;
 }
@@ -676,8 +733,9 @@ void OpenRen::or_UnlockSurface(hSurf param_1)
 	SDL_Surface* surface = (SDL_Surface*)param_1;
 
 	
-	//SDL_Surface* test = SDL_CreateRGBSurfaceWithFormatFrom(pixelSurface, surface->w, surface->h, 32, surface->pitch, SDL_PIXELFORMAT_RGB888);
+	//SDL_Surface* test = SDL_CreateRGBSurfaceWithFormatFrom(param_1, 32, 32, 32, 32, SDL_PIXELFORMAT_RGB888);
 	//SDL_SaveBMP(test, "test.bmp");
+	SDL_SaveBMP(surface, "test.bmp");
 	//SDL_UnlockSurface(surface);
 }
 
@@ -687,6 +745,8 @@ unsigned int __cdecl OpenRen::or_Fun30(undefined4 param_1, undefined4 param_2, u
 {
 	return 0;
 }
+
+//FUN_10021f40 console?
 
 //0xf8
 void OpenRen::or_Fun33()
@@ -704,6 +764,8 @@ void OpenRen::or_Fun33()
 #if 1
 	// ? Is apparentally `this` in some context?
 	// Passed alongside ModelMinTri
+
+	// Console variable result?
 	int* DAT_1008bf90 = NULL;
 
 
@@ -741,6 +803,15 @@ void OpenRen::or_Fun33()
 	return;
 }
 
+struct drawStruct {
+	unsigned int surfacePtr;
+	unsigned int unknown[2];
+	unsigned int srcPtr;
+	unsigned int dstPtr;
+	float unknownFloat; // Fade percentage?
+	unsigned int unknown2;
+	unsigned int colourKey;
+};
 
 //0xec
 // Related to DrawSurfaceToSurface
@@ -754,28 +825,29 @@ void OpenRen::or_Fun34(int* piParm1)
 	}
 
 #endif
-	SDL_Surface* surface = (SDL_Surface*)* piParm1;
+
+	drawStruct* ds = (drawStruct*)piParm1;
+
+	SDL_Surface* surface = (SDL_Surface*) ds->surfacePtr;
 	
-	// Looks like clipping
-	int* clipPtr1 = (int*)piParm1[3];
-	int* clipPtr2 = (int*)piParm1[4];
-
-	int* local_8c = *(int**)(*piParm1 + 0x84);
-
-	double local_3c = (double)(clipPtr1[2] - *clipPtr1);
-	double local_44 = (double)(clipPtr1[3] - clipPtr1[1]);
-	double local_4c = (double)(clipPtr2[2] - *clipPtr2);
-	double local_54 = (double)(clipPtr2[3] - clipPtr2[1]);
-
-	LTRect* src = (LTRect*)clipPtr1;
-	LTRect* dst = (LTRect*)clipPtr2;
+	// These come pre-clipped!
+	LTRect* src = (LTRect*)ds->srcPtr;
+	LTRect* dst = (LTRect*)ds->dstPtr;
 
 	SDL_Rect sdlSrc = { src->left, src->top, src->right, src->bottom };
 	SDL_Rect sdlDst = { dst->left, dst->top, dst->right, dst->bottom };
 
-	//SDL_Surface* surfaceConv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);//SDL_CreateRGBSurfaceWithFormatFrom(surface->pixels, surface->w, surface->h, 8, surface->pitch, surface->format->format);
-	//SDL_ConvertSurfaceFormat(surfaceConv, SDL_PIXELFORMAT_RGB888, 0);
+	unsigned int colourKeyLT = ds->colourKey;
+
+	// SDL uses a per format rgb, LT probably just uses 8 bits? Convert it!
+	int r, g, b;
+	GETRGB(colourKeyLT, r, g, b);
+
+	//2164195583 <-- 255,0,255
+	SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, r, g, b));
+
 	int result = SDL_BlitSurface(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
+	//int result = SDL_BlitScaled(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
 
 	if (result != 0) {
 		const char* error = SDL_GetError();
@@ -795,3 +867,4 @@ OpenRen::OpenRen()
 OpenRen::~OpenRen()
 {
 }
+

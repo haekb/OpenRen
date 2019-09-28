@@ -37,6 +37,18 @@ public:
 
 	int left, top, right, bottom;
 };
+
+// Gets r, g, and b as 0-255 integers.
+#define GETR(val) (((val) >> 16) & 0xFF)
+#define GETG(val) (((val) >> 8) & 0xFF)
+#define GETB(val) ((val) & 0xFF)
+#define GETRGB(val, r, g, b) \
+	{\
+		(r) = GETR(val);\
+		(g) = GETG(val);\
+		(b) = GETB(val);\
+	}
+
 // END NOLF
 
 // Jake's guessing iunno
