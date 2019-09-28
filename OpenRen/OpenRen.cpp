@@ -499,7 +499,6 @@ void __cdecl OpenRen::or_Flip(unsigned int param_1)
 		return;
 	}
 
-	SDL_SaveBMP(g_OpenRen->m_ScreenSurface, "Screen.bmp");
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(g_OpenRen->m_Renderer, g_OpenRen->m_ScreenSurface);
 
 	SDL_RenderCopy(g_OpenRen->m_Renderer, texture, NULL, NULL);
@@ -646,11 +645,7 @@ void OpenRen::or_GetSurfaceDims(int iParm1, undefined4* puParm2, undefined4* puP
 #endif
 }
 
-static void* pixelSurface;
-static void* after;
 //0xd4
-// Does something with a surface
-// offset 100 (dec: 256) holds a function? 
 // Lock Surface!
 unsigned int __cdecl OpenRen::or_LockSurface(hSurf param_1)
 {
@@ -659,31 +654,18 @@ unsigned int __cdecl OpenRen::or_LockSurface(hSurf param_1)
 	if (surface == NULL) {
 		return 0;
 	}
-	//SDL_LockSurface(surface);
-
-
-	//pixelSurface = malloc(32 * 32 * 3);
-	//memset(pixelSurface, 0, 32 * 32 * 3);
 
 	return (unsigned int)surface->pixels;
 }
+
 //0xd8
-// Takes in surface pointer and calls a function offset 128 from param_1
-// with a second parameter of 0
 void OpenRen::or_UnlockSurface(hSurf param_1)
 {
 	if (param_1 == NULL) {
 		return;
 	}
 
-
 	SDL_Surface* surface = (SDL_Surface*)param_1;
-
-	
-	//SDL_Surface* test = SDL_CreateRGBSurfaceWithFormatFrom(param_1, 32, 32, 32, 32, SDL_PIXELFORMAT_RGB888);
-	//SDL_SaveBMP(test, "test.bmp");
-	SDL_SaveBMP(surface, "test.bmp");
-	//SDL_UnlockSurface(surface);
 }
 
 //0xe4
@@ -788,6 +770,12 @@ void OpenRen::or_DrawToScreen(int* piParm1)
 	SDL_Rect sdlSrc = { src->left, src->top, src->right, src->bottom };
 	SDL_Rect sdlDst = { dst->left, dst->top, dst->right, dst->bottom };
 
+	// SDL doesn't want left or bottom, it wants width and height!
+	sdlSrc.w -= sdlSrc.x;
+	sdlSrc.h -= sdlSrc.y;
+	sdlDst.w -= sdlDst.x;
+	sdlDst.h -= sdlDst.y;
+
 	if (ds->fadePercentage != 1.0f) {
 		SDL_SetSurfaceAlphaMod(surface, ds->fadePercentage * 255);
 		SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
@@ -799,10 +787,8 @@ void OpenRen::or_DrawToScreen(int* piParm1)
 	int r, g, b;
 	GETRGB(colourKeyLT, r, g, b);
 
-	//2164195583 <-- 255,0,255
 	SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, r, g, b));
 
-	//int result = SDL_BlitSurface(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
 	int result = SDL_BlitScaled(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
 
 	if (result != 0) {
