@@ -161,26 +161,12 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 		g_OpenRen = new OpenRen();
 	}
 
-#if 1
-	int debug = true;
-	//LinkStruct ls = *pLinkStruct;
-#if 0
-	pLinkStruct->Init = ls_Init;
-	pLinkStruct->Term = NULL;
-	pLinkStruct->CreateSurface = NULL;
-	pLinkStruct->DeleteSurface = NULL;
-	pLinkStruct->UndefinedFunction_100262f0 = NULL;
-	pLinkStruct->UndefinedFunction_10032c00 = NULL;
-	pLinkStruct->UndefinedFunction_10032e50 = NULL;
-	pLinkStruct->UndefinedFunction_10033160 = NULL;
-#else
-	int* test = (int*)param_1;
-
 	g_OpenRen->m_RenderLinkStruct = (unsigned int*)param_1;
 
+#if 1
 	// 0-index debugging based, sorry!
 	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
-	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Fun1);
+	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Term);
 	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_Fun2);//2;
 	*(undefined4*)(param_1 + 0x78) = (unsigned int)(*OpenRen::or_Fun3);//3;
 	*(undefined4*)(param_1 + 0x7c) = (unsigned int)(*OpenRen::or_Fun4);//4;
@@ -203,20 +189,20 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xb8) = 21;
 	*(undefined4*)(param_1 + 0xbc) = (unsigned int)(*OpenRen::or_Flip);//22;
 	*(undefined4*)(param_1 + 0xc0) = 23;
-	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_Fun24);//24;
-	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_Fun25);//25;
+	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_SetScreenPixelFormat);//24;
+	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_CreateSurface);//25;
 	*(undefined4*)(param_1 + 0xcc) = (unsigned int)(*OpenRen::or_Fun26);//26;
-	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_Fun27);//27;
+	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_GetSurfaceDims);//27;
 	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_LockSurface);//28;
 	*(undefined4*)(param_1 + 0xd8) = (unsigned int)(*OpenRen::or_UnlockSurface);//29;
 	*(undefined4*)(param_1 + 0xe4) = (unsigned int)(*OpenRen::or_Fun30);//30;
 	*(undefined4*)(param_1 + 0xe8) = 31;
 	*(undefined4*)(param_1 + 0xf4) = 32;
 	*(undefined4*)(param_1 + 0xf8) = (unsigned int)(*OpenRen::or_Fun33);//33;
-	*(undefined4*)(param_1 + 0xec) = (unsigned int)(*OpenRen::or_Fun34);//34;
+	*(undefined4*)(param_1 + 0xec) = (unsigned int)(*OpenRen::or_DrawToScreen);//34;
 	*(undefined4*)(param_1 + 0xfc) = 35;
 	*(undefined4*)(param_1 + 0xf0) = 36;
-#endif
+
 #else
 	/* 0x21410  3  RenderDLLSetup */
 	DAT_1008cbcc = param_1;
@@ -269,7 +255,7 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	}
 
 	// Magic from the decompiled d3d.ren
-	pInitStruct->magic = 0xd5d;
+	pInitStruct->magic = RENDERER_MAGIC_VALUE;
 
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -284,8 +270,6 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	SDL_SetRenderDrawColor(g_OpenRen->m_Renderer, 0, 128, 255, 255);
 
 	g_OpenRen->m_ScreenSurface = SDL_CreateRGBSurfaceWithFormat(0, 1280, 720, 32, SDL_PIXELFORMAT_RGB888);
-
-	g_OpenRen->m_MainTexture = NULL;
 
 	// Disable if you have CShell with SDL Window Creation!
 	return 0;
@@ -312,9 +296,9 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	return 0;
 }
 
-void OpenRen::or_Fun1()
+void OpenRen::or_Term()
 {
-	// Maybe Term?
+	SDL_Quit();
 }
 
 //0x74
@@ -457,6 +441,8 @@ unsigned int OpenRen::or_Fun14(unsigned int uParam1)
 // Big function eep! -- Takes in Surface Pointer
 unsigned int __cdecl OpenRen::or_Fun17(int param_1)
 {
+	int* ptr = (int*)param_1;
+
 	return 0;
 }
 
@@ -520,7 +506,6 @@ void __cdecl OpenRen::or_Flip(unsigned int param_1)
 
 	SDL_RenderPresent(g_OpenRen->m_Renderer);
 
-
 	if (texture != NULL) {
 		SDL_DestroyTexture(texture);
 	}
@@ -532,7 +517,7 @@ void __cdecl OpenRen::or_Flip(unsigned int param_1)
 
 
 
-//0xc4
+
 // Something to do with display format?
 
 struct pixelFormat {
@@ -544,7 +529,9 @@ struct pixelFormat {
 	// Dunno what's next!
 };
 
-void OpenRen::or_Fun24(unsigned int* param_1)
+//0xc4
+//Fun24
+void OpenRen::or_SetScreenPixelFormat(unsigned int* param_1)
 {
 	// Fills it according to the memory dumps I've seen.
 	pixelFormat* pf = (pixelFormat*)param_1;
@@ -605,55 +592,14 @@ void OpenRen::or_Fun24(unsigned int* param_1)
 	}
 #endif
 }
-#if 0
-// AVP2, `this` is param_1, param_1 is a DAT var
-void __thiscall FUN_1001ded2(void* this, int param_1)
-{
-	undefined4* puVar1;
-	int iVar2;
-	int iVar3;
-
-	iVar2 = 4;
-	*(undefined4*)((int)this + 4) = *(undefined4*)(param_1 + 4);
-	puVar1 = (undefined4*)((int)this + 8);
-	param_1 = param_1 - (int)this;
-	iVar3 = iVar2;
-	do {
-		*puVar1 = *(undefined4*)(param_1 + (int)puVar1);
-		puVar1 = puVar1 + 1;
-		iVar3 = iVar3 + -1;
-	} while (iVar3 != 0);
-	puVar1 = (undefined4*)((int)this + 0x18);
-	iVar3 = iVar2;
-	do {
-		*puVar1 = *(undefined4*)((int)puVar1 + param_1);
-		puVar1 = puVar1 + 1;
-		iVar3 = iVar3 + -1;
-	} while (iVar3 != 0);
-	puVar1 = (undefined4*)((int)this + 0x28);
-	do {
-		*puVar1 = *(undefined4*)((int)puVar1 + param_1);
-		puVar1 = puVar1 + 1;
-		iVar2 = iVar2 + -1;
-	} while (iVar2 != 0);
-	return;
-}
-#endif
 
 //200
 // Font or Surface Init?
-int** __cdecl OpenRen::or_Fun25(int param_1, int param_2)
+//Fun25
+int** __cdecl OpenRen::or_CreateSurface(int param_1, int param_2)
 {
-	Uint32 rmask, gmask, bmask, amask;
-	rmask = 0x00ff0000;
-	gmask = 0x0000ff00;
-	bmask = 0x000000ff;
-	amask = 0x00000000;
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, param_1, param_2, 32, SDL_PIXELFORMAT_RGB888);
 
-	//SDL_Surface* surface = SDL_CreateRGBSurface(0, param_1, param_2, 24, rmask, gmask, bmask, amask);
-
-
-	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, param_1, param_2, 32, SDL_PIXELFORMAT_RGB888);//SDL_PIXELFORMAT_RGB332);
 	g_OpenRen->m_SurfaceCache.push_back(surface);
 
 	return (int**)surface;
@@ -668,7 +614,8 @@ void __cdecl OpenRen::or_Fun26(int** param_1)
 //0xd0
 // Called after or_Fun25 (SurfaceInit)
 // Might be a lock? Param 1 is a pointer address, 2 is width, 3 is height, and 4 is pitch?
-void OpenRen::or_Fun27(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4)
+//Fun27
+void OpenRen::or_GetSurfaceDims(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4)
 {
 	if (iParm1 == NULL) {
 		return;
@@ -808,7 +755,7 @@ struct drawStruct {
 	unsigned int unknown[2];
 	unsigned int srcPtr;
 	unsigned int dstPtr;
-	float unknownFloat; // Fade percentage?
+	float fadePercentage; // 0..1
 	unsigned int unknown2;
 	unsigned int colourKey;
 };
@@ -816,7 +763,8 @@ struct drawStruct {
 //0xec
 // Related to DrawSurfaceToSurface
 // Draw to Screen?
-void OpenRen::or_Fun34(int* piParm1)
+// Fun34
+void OpenRen::or_DrawToScreen(int* piParm1)
 {
 #if 0
 	// 3d mode?
@@ -828,14 +776,22 @@ void OpenRen::or_Fun34(int* piParm1)
 
 	drawStruct* ds = (drawStruct*)piParm1;
 
+	unsigned int* unknownPtr = (unsigned int*)ds->unknown[1];
+	unsigned int* unknownPtr2 = (unsigned int*)ds->unknown2;
+
 	SDL_Surface* surface = (SDL_Surface*) ds->surfacePtr;
-	
+
 	// These come pre-clipped!
 	LTRect* src = (LTRect*)ds->srcPtr;
 	LTRect* dst = (LTRect*)ds->dstPtr;
 
 	SDL_Rect sdlSrc = { src->left, src->top, src->right, src->bottom };
 	SDL_Rect sdlDst = { dst->left, dst->top, dst->right, dst->bottom };
+
+	if (ds->fadePercentage != 1.0f) {
+		SDL_SetSurfaceAlphaMod(surface, ds->fadePercentage * 255);
+		SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
+	}
 
 	unsigned int colourKeyLT = ds->colourKey;
 
@@ -846,11 +802,15 @@ void OpenRen::or_Fun34(int* piParm1)
 	//2164195583 <-- 255,0,255
 	SDL_SetColorKey(surface, 1, SDL_MapRGB(surface->format, r, g, b));
 
-	int result = SDL_BlitSurface(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
-	//int result = SDL_BlitScaled(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
+	//int result = SDL_BlitSurface(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
+	int result = SDL_BlitScaled(surface, &sdlSrc, g_OpenRen->m_ScreenSurface, &sdlDst);
 
 	if (result != 0) {
 		const char* error = SDL_GetError();
+	}
+
+	if (ds->fadePercentage != 1.0f) {
+		SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_NONE);
 	}
 
 	return;
@@ -862,6 +822,8 @@ OpenRen::OpenRen()
 	m_RenderLinkStruct = NULL;
 	m_RenderMode = {};
 	m_Window = NULL;
+	m_Renderer = NULL;
+	m_ScreenSurface = NULL;
 }
 
 OpenRen::~OpenRen()
