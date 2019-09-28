@@ -78,9 +78,9 @@ public:
 	static void or_Fun3(int iParm1);
 	static unsigned int** or_Fun4(unsigned int* puParm1);
 	static void or_Fun6(int* piParm1, unsigned int uParm2);
-	static unsigned int or_Fun7();
-	static unsigned int or_Fun8();
-	static unsigned int or_Fun9();
+	static unsigned int or_Start3D();
+	static unsigned int or_End3D();
+	static unsigned int Is3DModeEnabled();
 	static unsigned int or_Fun10();
 	static void or_Fun11();
 	static unsigned int __cdecl or_Fun12(int param_1);
@@ -98,7 +98,11 @@ public:
 	static unsigned int __cdecl or_Fun30(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4* param_5, undefined4* param_6);
 	static void or_Fun33();
 	static void or_DrawToScreen(int* piParm1);
+	static void or_VoidStub();
+	static unsigned int or_UintStub();
 	// End Render Functions`
+
+	bool m_Is3DModeEnabled;
 
 	unsigned int* m_RenderLinkStruct;
 
