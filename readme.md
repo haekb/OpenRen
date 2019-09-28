@@ -4,8 +4,8 @@ An experimental renderer replacement for No One Lives Forever 1. Don't expect th
 
 The eventual goal is to have both a Null and OpenGL renderer.
 
-A "Null" renderer is working up to the main menu.
-
+A basic SDL2 2D renderer is functional for menus.
+![](Github/screenshot1.png)
 
 ## Tools Used
 
