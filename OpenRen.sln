@@ -7,16 +7,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenRen", "OpenRen\OpenRen.
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
+		AVP2 - Debug|x64 = AVP2 - Debug|x64
+		AVP2 - Debug|x86 = AVP2 - Debug|x86
+		NOLF - Debug|x64 = NOLF - Debug|x64
+		NOLF - Debug|x86 = NOLF - Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0C085F04-F68E-4147-971C-4E8582F3F38B}.Debug|x64.ActiveCfg = Debug|x64
-		{0C085F04-F68E-4147-971C-4E8582F3F38B}.Debug|x64.Build.0 = Debug|x64
-		{0C085F04-F68E-4147-971C-4E8582F3F38B}.Debug|x86.ActiveCfg = Debug|Win32
-		{0C085F04-F68E-4147-971C-4E8582F3F38B}.Debug|x86.Build.0 = Debug|Win32
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.AVP2 - Debug|x64.ActiveCfg = AVP2 - Debug|x64
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.AVP2 - Debug|x64.Build.0 = AVP2 - Debug|x64
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.AVP2 - Debug|x86.ActiveCfg = AVP2 - Debug|Win32
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.AVP2 - Debug|x86.Build.0 = AVP2 - Debug|Win32
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.NOLF - Debug|x64.ActiveCfg = Debug|x64
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.NOLF - Debug|x64.Build.0 = Debug|x64
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.NOLF - Debug|x86.ActiveCfg = Debug|Win32
+		{0C085F04-F68E-4147-971C-4E8582F3F38B}.NOLF - Debug|x86.Build.0 = Debug|Win32
 		{0C085F04-F68E-4147-971C-4E8582F3F38B}.Release|x64.ActiveCfg = Release|x64
 		{0C085F04-F68E-4147-971C-4E8582F3F38B}.Release|x64.Build.0 = Release|x64
 		{0C085F04-F68E-4147-971C-4E8582F3F38B}.Release|x86.ActiveCfg = Release|Win32

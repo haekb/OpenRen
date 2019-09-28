@@ -17,6 +17,8 @@
 mono_crash.*
 
 # Build results
+AVP2 - [Dd]ebug/
+NOLF - [Dd]ebug/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

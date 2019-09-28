@@ -165,6 +165,8 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 
 #if 1
 	// 0-index debugging based, sorry!
+
+#ifdef OR_NOLF
 	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
 	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Term);
 	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_Fun2);//2;
@@ -202,6 +204,47 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xec) = (unsigned int)(*OpenRen::or_DrawToScreen);//34;
 	*(undefined4*)(param_1 + 0xfc) = 35;
 	*(undefined4*)(param_1 + 0xf0) = 36;
+#elif OR_AVP2
+	// TODO: Remap memory! Init, and term seem right at least :)
+	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Init);// = 0x10010b22;
+	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_Term);
+	*(undefined4*)(param_1 + 0x78) = (unsigned int)(*OpenRen::or_Fun2);//2;
+	*(undefined4*)(param_1 + 0x7c) = (unsigned int)(*OpenRen::or_Fun3);//3;
+	*(undefined4*)(param_1 + 0x80) = (unsigned int)(*OpenRen::or_Fun4);//4;
+	*(undefined4*)(param_1 + 0x84) = 5;
+	*(undefined4*)(param_1 + 0x88) = (unsigned int)(*OpenRen::or_Fun6);//6;
+	*(undefined4*)(param_1 + 0x8c) = (unsigned int)(*OpenRen::or_Fun7);//7;
+	*(undefined4*)(param_1 + 0x90) = (unsigned int)(*OpenRen::or_Fun8);//8;
+	*(undefined4*)(param_1 + 0x94) = (unsigned int)(*OpenRen::or_Fun9);//9;
+	*(undefined4*)(param_1 + 0x98) = (unsigned int)(*OpenRen::or_Fun10);//10;
+	*(undefined4*)(param_1 + 0x9c) = (unsigned int)(*OpenRen::or_Fun11);//11;
+	*(undefined4*)(param_1 + 0xa0) = (unsigned int)(*OpenRen::or_Fun12);//12;
+	*(undefined4*)(param_1 + 0xa8) = 13;
+	*(undefined4*)(param_1 + 0xac) = (unsigned int)(*OpenRen::or_Fun14);//14;
+	*(undefined4*)(param_1 + 0xb0) = 15;
+	*(undefined4*)(param_1 + 0xb4) = 16;
+	*(undefined4*)(param_1 + 0xa4) = (unsigned int)(*OpenRen::or_Fun17);//17;
+	*(undefined4*)(param_1 + 0xe4) = (unsigned int)(*OpenRen::or_Fun18);//18;
+	*(undefined4*)(param_1 + 0xe8) = (unsigned int)(*OpenRen::or_Fun19);//19;
+	*(undefined4*)(param_1 + 0xb8) = 20;
+	*(undefined4*)(param_1 + 0xbc) = 21;
+	*(undefined4*)(param_1 + 0xc0) = (unsigned int)(*OpenRen::or_Flip);//22;
+	*(undefined4*)(param_1 + 0xc4) = 23;
+	*(undefined4*)(param_1 + 200) = (unsigned int)(*OpenRen::or_SetScreenPixelFormat);//24;
+	*(undefined4*)(param_1 + 0xcc) = (unsigned int)(*OpenRen::or_CreateSurface);//25;
+	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_Fun26);//26;
+	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_GetSurfaceDims);//27;
+	*(undefined4*)(param_1 + 0xd8) = (unsigned int)(*OpenRen::or_LockSurface);//28;
+	*(undefined4*)(param_1 + 0xdc) = (unsigned int)(*OpenRen::or_UnlockSurface);//29;
+	*(undefined4*)(param_1 + 0xe0) = (unsigned int)(*OpenRen::or_Fun30);//30;
+	*(undefined4*)(param_1 + 0xec) = 31;
+	*(undefined4*)(param_1 + 0xf0) = 32;
+	*(undefined4*)(param_1 + 0xfc) = (unsigned int)(*OpenRen::or_Fun33);//33;
+	*(undefined4*)(param_1 + 0x100) = (unsigned int)(*OpenRen::or_DrawToScreen);//34;
+	*(undefined4*)(param_1 + 0xf4) = 35;
+	*(undefined4*)(param_1 + 0x104) = 36;
+	*(undefined4*)(param_1 + 0xf8) = 37;
+#endif
 
 #else
 	/* 0x21410  3  RenderDLLSetup */
