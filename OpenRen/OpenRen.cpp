@@ -291,7 +291,7 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0x104) = (unsigned int)(*OpenRen::or_DrawToScreen);//36;
 	*(undefined4*)(param_1 + 0xf8) = 37;
 #endif
-
+	
 #else
 	/* 0x21410  3  RenderDLLSetup */
 	DAT_1008cbcc = param_1;
@@ -406,6 +406,46 @@ struct CreateObjectStruct {
 	unsigned int* nextPtr; // Linked List
 };
 
+/*
+struct forthObject {
+	unsigned int* firstPtr;
+	unsigned int* secondPtr;
+	unsigned int* thirdPtr;
+	unsigned int* forthPtr;
+	unsigned int* fifthPtr;
+	unsigned int* sixthPtr;
+	unsigned int type; // ?
+	unsigned int* seventhPtr;
+	unsigned int* eighthPtr;
+};
+*/
+struct forthObject {
+	unsigned int* originPtr; // Ptr to the first `fn8` result 
+	unsigned int* latestPtr; // Ptr to the latest `fn8` result
+	unsigned int* thirdPtr;
+	unsigned int* forthPtr;
+	unsigned int* fifthPtr;
+
+	unsigned short something; // FF FF, so either max uShort or -1. 
+	unsigned short filenameLength;
+
+	//unsigned int sixthPtr;
+	unsigned short type; // So far it's been `3`
+	unsigned short type2; // I don't think `3` is a full uint.
+	char* filenamePtr;
+	unsigned int* empty; // This actually gets filled with something else when the next CreateObject rolls around. :thinking:
+};
+
+struct CreateObjectParam1 {
+	unsigned int* unknown[4];
+	unsigned int* firstPtr;
+	unsigned int* secondPtr;
+	unsigned int* thirdPtr;
+	unsigned int* unknown2[2];
+	forthObject* fileObj;//unsigned int* forthptr;
+	unsigned int* unknown3;
+};
+
 //0x74
 // Without this, CreateObject crashes!
 void OpenRen::or_Fun2(int iParm1, int iParm2)
@@ -414,7 +454,33 @@ void OpenRen::or_Fun2(int iParm1, int iParm2)
 	int* ptr = (int*)iParm1;
 
 	// 
-	CreateObjectStruct* pStruct = (CreateObjectStruct*)iParm1;
+	CreateObjectParam1* pStruct = (CreateObjectParam1*)iParm1;
+
+	// We need some better visibility here
+	static std::vector<CreateObjectParam1*> listOStructs;
+	listOStructs.push_back(pStruct);
+
+	typedef int* func1(int*, unsigned char*);
+	typedef void func2(int);
+
+	// ????
+	unsigned char charArray[8];
+	memset(charArray, 0, 8);
+	
+	// Define some engine linked functions from our RenderLink
+	int unknownFunction1Ptr = *(undefined4*)(g_OpenRen->m_RenderLinkStruct + 8);
+	int unknownFunction2Ptr = *(undefined4*)(g_OpenRen->m_RenderLinkStruct + 0xc);
+
+	func1* fn8 = (func1*)unknownFunction1Ptr;
+	func2* fn0c = (func2*)unknownFunction2Ptr;
+
+	// Create a...thing
+	int* test = fn8(ptr, charArray);
+
+	// Do something with a param!
+	fn0c(iParm1);
+
+	bool debug = true;
 
 	return;
 }
