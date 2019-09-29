@@ -8,16 +8,6 @@
 // SDL Logging
 std::fstream g_SDLLogFile;
 
-void SDLLog(void* userdata, int category, SDL_LogPriority priority, const char* message)
-{
-	// Open up SDL Log File
-	g_SDLLogFile.open("OpenRen.log", std::ios::out | std::ios::app);
-	g_SDLLogFile << message << "\n";
-	g_SDLLogFile.close();
-}
-
-
-
 // DLL Export Functions
 extern "C"
 {
@@ -26,6 +16,15 @@ extern "C"
 	DllExport RMode* GetSupportedModes(void);
 	DllExport void __cdecl RenderDLLSetup(unsigned int param_1);
 };
+
+void SDLLog(void* userdata, int category, SDL_LogPriority priority, const char* message)
+{
+	return;
+	// Open up SDL Log File
+	g_SDLLogFile.open("OpenRen.log", std::ios::out | std::ios::app);
+	g_SDLLogFile << message << "\n";
+	g_SDLLogFile.close();
+}
 
 // Entry -- Not Used?
 int entry(unsigned int param_1, int param_2, unsigned int param_3)
@@ -542,7 +541,7 @@ unsigned int __cdecl OpenRen::or_Fun12(int param_1)
 
 
 #endif
-	return 0;
+	return 1;
 }
 
 //0xa8
@@ -959,3 +958,9 @@ OpenRen::OpenRen()
 	m_Renderer = NULL;
 	m_ScreenSurface = NULL;
 	m_Is3DModeEnabled = false;
+}
+
+OpenRen::~OpenRen()
+{
+}
+
