@@ -91,7 +91,6 @@ RMode* GetSupportedModes(void)
 		g_OpenRen = new OpenRen();
 	}
 
-#if 1
 	RMode* supportedModes = NULL;
 
 	supportedModes = (RMode*)malloc(sizeof(RMode));
@@ -99,70 +98,95 @@ RMode* GetSupportedModes(void)
 	// Oops, we can't memory!
 	if (!supportedModes)
 	{
+		SDL_Log("We couldn't allocate the supported modes array!");
 		return 0;
 	}
-	
-	std::string renderDll = "Open Renderer";
-	std::string internalName = "Some Card";
-	std::string description = "A Video Card";
 
+	// Clear the struct with a default
+	// If for some reason we can't get any display info, this will be a default!
 	memset(supportedModes->m_RenderDLL, 0, 256);
 	memset(supportedModes->m_InternalName, 0, 128);
 	memset(supportedModes->m_Description, 0, 128);
-
-	renderDll.copy(supportedModes->m_RenderDLL, 256);
-	internalName.copy(supportedModes->m_InternalName, 128);
-	description.copy(supportedModes->m_Description, 128);
-
-	supportedModes->m_bHardware = false;
-	supportedModes->m_Width = 1280;
-	supportedModes->m_Height = 720;
+	supportedModes->m_bHardware = 1;
+	supportedModes->m_Width = 640;
+	supportedModes->m_Height = 480;
 	supportedModes->m_BitDepth = 32;
-
 	supportedModes->m_pNext = NULL;
 
-	return supportedModes;
-#else
-	undefined4* puVar1;
-	int iVar2;
-	int iVar3;
-	undefined4* puVar4;
-	code** local_10;
-	int* local_c[2];
+	// Startup SDL2!
+	SDL_Init(SDL_INIT_VIDEO);
 
-	/* 0x212d0  2  GetSupportedModes */
-	DAT_1008bf24 = 0;
-	FUN_10069e40();
-	puVar4 = DAT_1008bf7c;
-	if (DAT_1008bf7c != &DAT_1008bf78) {
-		do {
-			iVar2 = puVar4[2];
-			iVar3 = DirectDrawCreate(*(undefined4*)(iVar2 + 0x20), &local_10, 0);
-			if (iVar3 == 0) {
-				iVar3 = (**(code * *)* local_10)(local_10, &DAT_100881a8, local_c);
-				if (iVar3 == 0) {
-					DAT_1008bf20 = iVar2;
-					(**(code * *)(*local_c[0] + 0x20))(local_c[0], 0, 0, 0, &LAB_10021220);
-					(**(code * *)(*local_c[0] + 8))(local_c[0]);
-				}
-				(**(code * *)(*local_10 + 8))(local_10);
+#if 1
+	int i, displayModeCount;
+	SDL_DisplayMode mode;
+	bool isFirst = true;
+
+	RMode* thisMode = supportedModes;
+
+	std::string renderDll = RENDERER_DLL_NAME;
+
+	// For each display...
+	for (int displayIndex = 0; displayIndex < SDL_GetNumVideoDisplays(); ++displayIndex) {
+
+		displayModeCount = SDL_GetNumDisplayModes(displayIndex);
+
+		if (displayModeCount < 1) {
+			SDL_Log("SDL_GetNumDisplayModes failed: %s", SDL_GetError());
+			continue;
+		}
+
+		// Setup the display names
+		std::string description = "Display " + std::to_string(displayIndex + 1);
+		std::string internalName = SDL_GetVideoDriver(displayIndex);
+
+		// For each resolution...
+		for (i = 0; i < displayModeCount; ++i) {
+			// Save this mode for later
+			RMode* lastMode = thisMode;
+
+			if (SDL_GetDisplayMode(displayIndex, i, &mode) != 0) {
+				SDL_Log("SDL_GetDisplayMode failed: %s", SDL_GetError());
+				continue;
 			}
-			puVar1 = puVar4 + 1;
-			puVar4 = (undefined4*)* puVar1;
-		} while ((undefined4*)* puVar1 != &DAT_1008bf78);
+
+			// Skip duplicates
+			if (mode.w == lastMode->m_Width && mode.h == lastMode->m_Height) {
+				continue;
+			}
+
+			// Allocate the new RMode if we're not the first iteration
+			if (!isFirst) {
+				thisMode = (RMode*)malloc(sizeof(RMode));
+			}
+
+			memset(thisMode->m_RenderDLL, 0, 256);
+			memset(thisMode->m_InternalName, 0, 128);
+			memset(thisMode->m_Description, 0, 128);
+			
+			thisMode->m_Width = mode.w;
+			thisMode->m_Height = mode.h;
+			thisMode->m_BitDepth = 32;
+			thisMode->m_bHardware = 1; // Sure?
+			thisMode->m_pNext = NULL;
+
+			renderDll.copy(thisMode->m_RenderDLL, 256);
+			internalName.copy(thisMode->m_InternalName, 128);
+			description.copy(thisMode->m_Description, 128);
+
+			if (!isFirst) {
+				// Link this mode
+				lastMode->m_pNext = thisMode;
+			}
+
+			// We did it folks!
+			isFirst = false;
+		}
+
 	}
-	puVar4 = DAT_1008bf7c;
-	if (DAT_1008bf7c != &DAT_1008bf78) {
-		do {
-			puVar1 = (undefined4*)puVar4[1];
-			FUN_10021cb0((LPVOID)puVar4[2]);
-			puVar4 = puVar1;
-		} while (puVar1 != &DAT_1008bf78);
-	}
-	DAT_1008bf78 = &DAT_1008bf78;
-	DAT_1008bf7c = &DAT_1008bf78;
-	return DAT_1008bf24;
+
 #endif
+
+	return supportedModes;
 }
 
 //

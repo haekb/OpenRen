@@ -11,6 +11,7 @@
 #define undefined4 unsigned int
 
 #define RENDERER_MAGIC_VALUE 0xd5d
+#define RENDERER_DLL_NAME "Open Renderer"
 
 // NOLF HEADER
 // Render modes are what are used to describe a video mode/video card.
