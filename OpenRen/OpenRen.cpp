@@ -81,6 +81,15 @@ LAB_100818b6:
 
 void __cdecl FreeModeList(void* param_1)
 {
+	RMode* supportedModes = (RMode*)param_1;
+
+	while (supportedModes != NULL)
+	{
+		RMode* nextMode = supportedModes->m_pNext;
+		delete(supportedModes);
+		supportedModes = nextMode;
+	}
+
 	return;
 }
 
@@ -950,9 +959,3 @@ OpenRen::OpenRen()
 	m_Renderer = NULL;
 	m_ScreenSurface = NULL;
 	m_Is3DModeEnabled = false;
-}
-
-OpenRen::~OpenRen()
-{
-}
-
