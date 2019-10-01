@@ -610,7 +610,7 @@ unsigned int OpenRen::or_End3D()
 //0x90
 unsigned int OpenRen::Is3DModeEnabled()
 {
-	SDL_Log("Calling Is 3D Enabled");
+	SDL_Log("Calling Is 3D Enabled %d ?",g_OpenRen->m_Is3DModeEnabled);
 #if 0
 	// Basically 0?
 	return DAT_1008d7c8;
