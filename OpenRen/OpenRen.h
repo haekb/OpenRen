@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <SDL.h>
 #include <vector>
+#include "ltlink.h"
 
 #define DllExport   __declspec( dllexport )
 
@@ -26,6 +27,7 @@ struct RMode
 	unsigned int	m_Width, m_Height, m_BitDepth;
 	RMode* m_pNext;
 };
+/*
 class LTRect
 {
 public:
@@ -40,7 +42,7 @@ public:
 
 	int left, top, right, bottom;
 };
-
+*/
 // Gets r, g, and b as 0-255 integers.
 #define GETR(val) (((val) >> 16) & 0xFF)
 #define GETG(val) (((val) >> 8) & 0xFF)

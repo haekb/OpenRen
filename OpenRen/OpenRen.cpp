@@ -5,6 +5,7 @@
 #include <math.h>
 #include <fstream>
 
+
 // SDL Logging
 std::fstream g_SDLLogFile;
 
@@ -420,11 +421,14 @@ struct forthObject {
 };
 */
 struct forthObject {
-	unsigned int* originPtr; // Ptr to the first `fn8` result 
-	unsigned int* latestPtr; // Ptr to the latest `fn8` result
+	LTLink link;
+	//unsigned int* originPtr; // Ptr to the first `fn8` result 
+	//unsigned int* latestPtr; // Ptr to the latest `fn8` result
+	/*
 	unsigned int* thirdPtr;
-	unsigned int* forthPtr;
-	unsigned int* fifthPtr;
+		*/
+	unsigned int* firstPtr;
+	unsigned int* SecondPtr;
 
 	unsigned short something; // FF FF, so either max uShort or -1. 
 	unsigned short filenameLength;
@@ -434,16 +438,41 @@ struct forthObject {
 	unsigned short type2; // I don't think `3` is a full uint.
 	char* filenamePtr;
 	unsigned int* empty; // This actually gets filled with something else when the next CreateObject rolls around. :thinking:
+	
 };
 
 struct CreateObjectParam1 {
 	unsigned int* unknown[4];
-	unsigned int* firstPtr;
-	unsigned int* secondPtr;
+	LTLink link;
+	/*
+	unsigned int* llFirstPtr; // Linked list
+	unsigned int* llLastPtr; 
 	unsigned int* thirdPtr;
+	*/
 	unsigned int* unknown2[2];
 	forthObject* fileObj;//unsigned int* forthptr;
 	unsigned int* unknown3;
+};
+
+struct fn8Object {
+	LTLink link;
+	/*
+	unsigned int* firstPtr;
+	unsigned int* secondPtr;
+	unsigned int* unknownPtr;
+	*/
+	unsigned int unknownInt[2];
+	unsigned int* thirdPtr;
+	unsigned int* forthPtr;
+
+	/*
+		unsigned int unknownInt2;
+		unsigned int height;
+		unsigned int forthPtr;
+		unsigned int fifthPtr;
+		unsigned int sixthPtr;
+		unsigned int unknownInt3;
+	*/
 };
 
 //0x74
@@ -455,6 +484,10 @@ void OpenRen::or_Fun2(int iParm1, int iParm2)
 
 	// 
 	CreateObjectParam1* pStruct = (CreateObjectParam1*)iParm1;
+
+	//std::string filename = pStruct->fileObj->filenamePtr;
+
+	size_t sizeOfLinkedList = sizeof(LTLink);
 
 	// We need some better visibility here
 	static std::vector<CreateObjectParam1*> listOStructs;
@@ -472,13 +505,17 @@ void OpenRen::or_Fun2(int iParm1, int iParm2)
 	int unknownFunction2Ptr = *(undefined4*)(g_OpenRen->m_RenderLinkStruct + 0xc);
 
 	func1* fn8 = (func1*)unknownFunction1Ptr;
-	func2* fn0c = (func2*)unknownFunction2Ptr;
+	func2* fn0xc = (func2*)unknownFunction2Ptr;
 
-	// Create a...thing
-	int* test = fn8(ptr, charArray);
+	if (iParm2 != 0) {
+		// Create a...thing
+		fn8Object* test = (fn8Object*)fn8(ptr, charArray);
+	}
 
 	// Do something with a param!
-	fn0c(iParm1);
+	fn0xc(iParm1);
+
+	//SDL_CreateRGBSurfaceWithFormatFrom(test->)
 
 	bool debug = true;
 
