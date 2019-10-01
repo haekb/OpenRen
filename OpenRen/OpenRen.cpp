@@ -711,10 +711,34 @@ void __cdecl OpenRen::or_Fun18(int param_1)
 #endif
 }
 
+
+struct RenderStruct {
+	int type; // version didn't make sense, those are the only two i've got :shrug:
+	unsigned int ptrParty[6]; // 6 pointers, gosh golly!
+	char unknown[196];
+	int objCount; // Confirmed
+};
+
 //0xb0
 // Probably RenderObjects related, it's a big function!
-unsigned int OpenRen::or_Fun19()
+unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
 {
+
+	RenderStruct* renderStruct = (RenderStruct*)pParam1;
+
+	// Decompiled code pushes to EBP from stack
+	// So I think it's just a param ptr.
+	// Also this code doesn't work !
+	// Reference only !!
+#if 0
+	__asm PUSH EBP
+	unsigned int var = 0;
+	__asm MOV EBP, var
+#endif
+
+	int* objPtr = (int*)0x1008bf68;
+	int* StructPtr = (int*)0x1008bf6c;
+
 	SDL_Log("Calling RenderObjects?");
 	return 0;
 }

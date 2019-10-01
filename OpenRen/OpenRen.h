@@ -90,7 +90,7 @@ public:
 	static unsigned int or_Fun14(unsigned int uParam1);
 	static unsigned int __cdecl or_Fun17(int param_1);
 	static void __cdecl or_Fun18(int param_1);
-	static unsigned int or_Fun19();
+	static unsigned int or_Fun19(unsigned int* pParam1);
 	static void __cdecl or_Flip(unsigned int param_1);
 	static void or_SetScreenPixelFormat(unsigned int* param_1);
 	static int** __cdecl or_CreateSurface(int param_1, int param_2);
