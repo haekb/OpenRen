@@ -711,13 +711,43 @@ void __cdecl OpenRen::or_Fun18(int param_1)
 #endif
 }
 
-
+/*
 struct RenderStruct {
 	int type; // version didn't make sense, those are the only two i've got :shrug:
-	unsigned int ptrParty[6]; // 6 pointers, gosh golly!
+	unsigned int* ptrParty[6]; // 6 pointers, gosh golly! They're all zeros
 	char unknown[196];
 	int objCount; // Confirmed
 };
+*/
+
+struct unknownPtr2Struct {
+	unsigned int* ptr1;
+	unsigned int* ptr2;
+};
+
+struct RenderStruct {
+	int type; // version didn't make sense, those are the only two i've got :shrug:
+	unsigned int* ptrParty[6]; // 6 pointers, gosh golly! They're all zeros
+	char unknown[52];
+	float vector[3]; // Maybe vector? 3 1.0 floats
+	char unknown2[12];
+	float deltaTime; // 90% sure
+	//unsigned int largeNumber;
+	char unknown3[48];
+	unsigned int* unknownPtr1; // Goes to a 4-byte zero'd out value
+	char unknown4[12];
+	unsigned int width;
+	unsigned int height;
+	//unsigned int largeNumber2;
+	//unsigned short shortNumber1;
+	//unsigned short shortNumber2;
+	float vector2[3];
+	char unknown5[24];
+	float unknownFloat2;
+	unknownPtr2Struct* unknownPtr2; // Goes to a 8-byte value
+	int objCount; // Confirmed
+};
+
 
 //0xb0
 // Probably RenderObjects related, it's a big function!
