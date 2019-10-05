@@ -720,9 +720,72 @@ struct RenderStruct {
 };
 */
 
+
+/*
 struct unknownPtr2Struct {
+	//unsigned int* ptrParty[19];
+	unsigned int* objects;
+	unsigned short maxShorts[2];
+	unsigned int* ptrPartyLarge[2];
+	unsigned int type;
+	unsigned int* ptrPartyLarge2[6]; // Seems to be Start3D
+};
+*/
+
+/*
+struct objectData {
+	unsigned int* objConstant; // This is within lithtech.exe, it's pretty constant between all the examples i've seen.
+	unsigned int ptrParty[33];
+	unsigned int objectFlag1;
+	unsigned int objectFlag2;
+	unsigned int ptrParty2[3];
+	LTRotation rotation;
+	LTVector scale;
+	unsigned int unknownInt;
+	unsigned int objectType;
+	unsigned int ptrParty3[12];
+	LTVector positionMin;
+	LTVector positionMax;
+	unsigned int ptrParty4[33];
+	LTVector position;
+	LTVector unknownVector;
+};
+*/
+struct objectData {
+	unsigned int* objConstant; // This is within lithtech.exe, it's pretty constant between all the examples i've seen.
+	unsigned int* ptrParty[4];
+	LTLink link1;
+	unsigned int filler1;
+	LTLink link2;
+	unsigned int filler2;
+	LTLink link3;
+	unsigned int filler3;
+	LTLink link4;
+	unsigned int zero[2];
+	unsigned char colour[4]; // Colour?
 	unsigned int* ptr1;
-	unsigned int* ptr2;
+	CheapLTLink cheapLink1;
+	unsigned int filler4;
+	LTLink link5;
+	unsigned int* ptrParty1point5[4];
+	unsigned int objectFlag1;
+	unsigned int objectFlag2;
+	unsigned int* ptrParty2[3];
+	LTRotation rotation;
+	LTVector scale;
+	unsigned int unknownInt;
+	unsigned int objectType;
+	unsigned int* ptrParty3[12];
+	LTVector positionMin;
+	LTVector positionMax;
+	unsigned int* ptrParty4[33];
+	LTVector position;
+	LTVector unknownVector;
+};
+
+
+struct objectStruct {
+	objectData* objects[15]; // Based off objCount!
 };
 
 struct RenderStruct {
@@ -744,7 +807,9 @@ struct RenderStruct {
 	float vector2[3];
 	char unknown5[24];
 	float unknownFloat2;
-	unknownPtr2Struct* unknownPtr2; // Goes to a 8-byte value
+	objectStruct* objects;
+	//unsigned int* objects[52]; // Max interface objs + 2!
+	//unsigned int** objects; // Goes to a 8-byte value
 	int objCount; // Confirmed
 };
 
@@ -756,6 +821,40 @@ unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
 
 	RenderStruct* renderStruct = (RenderStruct*)pParam1;
 
+	unsigned int offset = offsetof(RenderStruct, objects);
+
+
+#if 0
+	(**(code * *)(*DAT_1008d988 + 0x50))(DAT_1008d988, 0x88, (uint)(DAT_1008d7a0 != 0));
+	FUN_10026670();
+	FUN_10050390();
+	FUN_1001eb20();
+	if (*in_EAX == 2) {
+		puVar3 = FUN_1007b8d0();
+		FUN_1007bae0((int)puVar3);
+		piVar5 = (int*)in_EAX[0x37];
+		if (0 < in_EAX[0x38]) {
+			piVar1 = piVar5 + in_EAX[0x38];
+			do {
+				iVar2 = *piVar5;
+				if ((((iVar2 != 0) && (iVar4 = (int) * (char*)(iVar2 + 0xbc), -1 < iVar4)) && (iVar4 < 0xb))
+					&& (*(code * *)(&DAT_100895c0 + iVar4 * 0x14) != (code*)0x0)) {
+					(**(code * *)(&DAT_100895c0 + iVar4 * 0x14))(iVar2);
+				}
+				piVar5 = piVar5 + 1;
+			} while ((int)piVar5 < (int)piVar1);
+		}
+	}
+
+#endif
+
+
+#if 0
+	FUN_1007bae0((int)puVar3);
+	piVar5 = (int*)in_EAX[0x37];
+	if (0 < in_EAX[0x38]) {
+		piVar1 = piVar5 + in_EAX[0x38];
+#endif
 	// Decompiled code pushes to EBP from stack
 	// So I think it's just a param ptr.
 	// Also this code doesn't work !
@@ -770,6 +869,9 @@ unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
 	int* StructPtr = (int*)0x1008bf6c;
 
 	SDL_Log("Calling RenderObjects?");
+
+	//free(renderStruct->objects);
+
 	return 0;
 }
 
