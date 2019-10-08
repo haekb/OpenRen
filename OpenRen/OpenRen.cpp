@@ -751,9 +751,18 @@ struct objectData {
 	LTVector unknownVector;
 };
 */
+
+struct ptr1 {
+	unsigned int* ptrParty[2];
+	CheapLTLink ltCheapLink1;
+	CheapLTLink ltCheapLink2;
+};
+
 struct objectData {
 	unsigned int* objConstant; // This is within lithtech.exe, it's pretty constant between all the examples i've seen.
-	unsigned int* ptrParty[4];
+	ptr1 pointer1;
+	objectData* thisRef;
+	unsigned int* ptrParty[2];
 	LTLink link1;
 	unsigned int filler1;
 	LTLink link2;
@@ -824,37 +833,6 @@ unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
 	unsigned int offset = offsetof(RenderStruct, objects);
 
 
-#if 0
-	(**(code * *)(*DAT_1008d988 + 0x50))(DAT_1008d988, 0x88, (uint)(DAT_1008d7a0 != 0));
-	FUN_10026670();
-	FUN_10050390();
-	FUN_1001eb20();
-	if (*in_EAX == 2) {
-		puVar3 = FUN_1007b8d0();
-		FUN_1007bae0((int)puVar3);
-		piVar5 = (int*)in_EAX[0x37];
-		if (0 < in_EAX[0x38]) {
-			piVar1 = piVar5 + in_EAX[0x38];
-			do {
-				iVar2 = *piVar5;
-				if ((((iVar2 != 0) && (iVar4 = (int) * (char*)(iVar2 + 0xbc), -1 < iVar4)) && (iVar4 < 0xb))
-					&& (*(code * *)(&DAT_100895c0 + iVar4 * 0x14) != (code*)0x0)) {
-					(**(code * *)(&DAT_100895c0 + iVar4 * 0x14))(iVar2);
-				}
-				piVar5 = piVar5 + 1;
-			} while ((int)piVar5 < (int)piVar1);
-		}
-	}
-
-#endif
-
-
-#if 0
-	FUN_1007bae0((int)puVar3);
-	piVar5 = (int*)in_EAX[0x37];
-	if (0 < in_EAX[0x38]) {
-		piVar1 = piVar5 + in_EAX[0x38];
-#endif
 	// Decompiled code pushes to EBP from stack
 	// So I think it's just a param ptr.
 	// Also this code doesn't work !
@@ -867,6 +845,29 @@ unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
 
 	int* objPtr = (int*)0x1008bf68;
 	int* StructPtr = (int*)0x1008bf6c;
+
+	// Probably used to signal video playback. 
+	// Ptr is in binkw32.dll!
+	int* binkPtr = (int*)0x1002d9b2;
+
+	//unsigned int* test = *pParam1 + 0x50
+
+	unsigned int* mysteryPointer = (unsigned int*)(pParam1 + 0x140);
+
+#if 0
+	DAT_1008d520 = 0;
+	DAT_1008d4bc = 0;
+	DAT_1008d4c0 = 0;
+	DAT_1008d4c4 = 0;
+	*(undefined4*)(DAT_1008cbcc + 0x4c) = 0;
+	*(undefined4*)(DAT_1008cbcc + 0x48) = 0;
+	(**(code * *)(*DAT_1008d988 + 0x50))();
+	if (DAT_1008d594 == 0) {
+		DAT_1008ef80 = &LAB_1002b0c0;
+		FUN_10029894();
+		DAT_1008ef80 = (undefined*)0x0;
+}
+#endif
 
 	SDL_Log("Calling RenderObjects?");
 
