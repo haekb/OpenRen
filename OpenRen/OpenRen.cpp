@@ -758,23 +758,40 @@ struct ptr1 {
 	CheapLTLink ltCheapLink2;
 };
 
+
+struct fileEntry {
+	unsigned int* empty;
+	LTLink link;
+	unsigned int* rezRelated;
+	unsigned short maxShort;
+	unsigned short fileNameLength;
+	unsigned int* unknownLowNumber;
+	unsigned char* fileName;
+	unsigned int* modelRelatedArea;
+};
+
+struct filesArr {
+	fileEntry files[4];
+};
+
+
 struct objectData {
 	unsigned int* objConstant; // This is within lithtech.exe, it's pretty constant between all the examples i've seen.
 	ptr1 pointer1;
 	objectData* thisRef;
-	unsigned int* ptrParty[2];
-	LTLink link1;
-	unsigned int filler1;
+	//unsigned int* ptrParty[2];
+	//LTLink link1;
+	unsigned int* filler1;
 	LTLink link2;
-	unsigned int filler2;
+	unsigned int* filler2;
 	LTLink link3;
-	unsigned int filler3;
+	unsigned int* filler3;
 	LTLink link4;
-	unsigned int zero[2];
+	unsigned int* zero[2];
 	unsigned char colour[4]; // Colour?
 	unsigned int* ptr1;
 	CheapLTLink cheapLink1;
-	unsigned int filler4;
+	unsigned int* filler4;
 	LTLink link5;
 	unsigned int* ptrParty1point5[4];
 	unsigned int objectFlag1;
@@ -782,7 +799,7 @@ struct objectData {
 	unsigned int* ptrParty2[3];
 	LTRotation rotation;
 	LTVector scale;
-	unsigned int unknownInt;
+	unsigned int* unknownInt;
 	unsigned int objectType;
 	unsigned int* ptrParty3[12];
 	LTVector positionMin;
@@ -790,6 +807,9 @@ struct objectData {
 	unsigned int* ptrParty4[33];
 	LTVector position;
 	LTVector unknownVector;
+	unsigned int* unknownEnd1[2];
+	filesArr* files;
+	unsigned int* unknownEnd[33];
 };
 
 
