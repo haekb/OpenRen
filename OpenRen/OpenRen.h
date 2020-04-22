@@ -29,9 +29,29 @@ struct DLLRenderStruct {
 	intptr_t* AfterPadding[64];
 	*/
 
-	// 
+	// Functions are from MAC debug symbols :D
+	// These are implemented in Lithtech.exe!
+	intptr_t* (*pProcessAttachment)(intptr_t* pObject, intptr_t* pAttachment);
+	void (*GetSharedTexture)(char* szFileName);
+	intptr_t* (*GetTexture)(intptr_t* pTextureData);
+	void (*FreeTexture)(intptr_t* pTextureData);
+	void (*RunConsoleString)(char* szString);
+
+	// Has a vsprintf, so yolo
+	void (*ConsolePrint)(char* szString, ...);
+	intptr_t* (*GetParameter)(char* szString);
+	float (*GetParameterValueFloat)(intptr_t* pParam);
+	char* (*GetParameterValueString)(intptr_t* pParam);
+	void (*RendererPing)(void);
+	uint32 (*IncObjectFrameCode)(void);
+	uint32 (*GetObjectFrameCode)(void);
+	// 12
+	uint32 (*IncCurTextureFrameCode)(void);
+	uint32 (*rAlloc)(intptr_t* pParam, ...);
+	uint32 (*rFree)(intptr_t* pParam, ...);
+
 	//intptr_t* Unknown[0x40];
-	intptr_t* FunctionSpace1[15];
+	//intptr_t* FunctionSpace1[15];
 	
 	// Confirmed
 	uint32 Width;
