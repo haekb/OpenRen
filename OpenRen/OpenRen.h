@@ -45,7 +45,6 @@ struct DLLRenderStruct {
 	void (*RendererPing)(void);
 	uint32 (*IncObjectFrameCode)(void);
 	uint32 (*GetObjectFrameCode)(void);
-	// 12
 	uint32 (*IncCurTextureFrameCode)(void);
 	uint32 (*rAlloc)(intptr_t* pParam, ...);
 	uint32 (*rFree)(intptr_t* pParam, ...);
@@ -60,6 +59,12 @@ struct DLLRenderStruct {
 	
 	int Unknown1[9];
 	
+	// Our render functions!
+	// Order here counts per game, so these may be shuffled around.
+	//uint32 (*Init)(intptr_t* pInitStruct);
+	//void (*Term)(void);
+
+
 	intptr_t* FunctionSpace2[37];
 	// A don't clear marker is at 0x40
 	int32 DontClear;
@@ -128,34 +133,42 @@ public:
 
 	// Render Functions
 	static unsigned int __cdecl or_Init(InitStruct* pInitStruct);
-
 	static void or_Term();
-	static void or_Fun2(int iParm1, int iParm2);
-	static void or_Fun3(int iParm1);
-	static unsigned int** or_CreateContext(unsigned int* puParm1);
-	static void or_Fun6(int* piParm1, unsigned int uParm2);
+	static void or_BindTexture(intptr_t* pTextureData, int nFlag);
+	static void or_UnbindTexture(intptr_t* pTextureData);
+	static intptr_t* or_CreateContext(unsigned int* puParm1);
+	static void or_DeleteContext(intptr_t* pContext);
+	static void or_Clear(LTRect pRect, uint32 nFlags);
 	static unsigned int or_Start3D();
 	static unsigned int or_End3D();
-	static unsigned int Is3DModeEnabled();
+	static unsigned int or_Is3DModeEnabled();
 	static unsigned int or_StartOptimized2D();
 	static void or_EndOptimized2D();
-	static unsigned int __cdecl or_Fun12(int param_1);
-	static unsigned int or_Fun14(unsigned int uParam1);
-	static unsigned int __cdecl or_Fun17(int param_1);
-	static void __cdecl or_Fun18(int param_1);
-	static unsigned int or_Fun19(unsigned int* pParam1);
+	static uint32 or_SetOptimized2DBlend(uint32 nBlend);
+	static uint32 or_GetOptimized2DBlend(uint32& nBlend);
+	static uint32 or_SetOptimized2DColour(uint32 nColour);
+	static uint32 or_GetOptimized2DColour(uint32& nColour);
+	static uint32 or_IsInOptimized2D();
+	static uint32 or_OptimizeSurface(intptr_t* pSurface);
+	static void or_UnoptimizeSurface(intptr_t* pSurface);
+	static uint32 or_RenderScene(intptr_t* pSceneDesc);
 	static void or_RenderCommand(int argc, char** argv); //(void* param_1, int param_2, byte** param_3);
 	static void* or_GetHook(char* pHook);
-	static void __cdecl or_Flip(unsigned int param_1);
+	static void or_SwapBuffers(uint32 nFlags);
+	static uint32 or_GetInfoFlags();
 	static void or_SetScreenPixelFormat(unsigned int* param_1);
-	static int** __cdecl or_CreateSurface(int param_1, int param_2);
-	static void __cdecl or_Fun26(int** param_1);
-	static void or_GetSurfaceDims(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4);
-	static unsigned int __cdecl or_LockSurface(hSurf param_1);
-	static void or_UnlockSurface(hSurf param_1);
-	static unsigned int __cdecl or_Fun30(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4* param_5, undefined4* param_6);
-	static void or_Fun33();
-	static void or_DrawToScreen(int* piParm1);
+	static intptr_t* or_CreateSurface(int width, int height);
+	static void or_DestroySurface(intptr_t* pSurface);
+	static void or_GetSurfaceDims(intptr_t* pSurface, uint32* pWidth, uint32* pHeight, uint32* pPitch);
+	static void* or_LockSurface(intptr_t pSurface);
+	static void or_UnlockSurface(intptr_t pSurface);
+	static uint32 or_LockScreen(int left, int top, int right, int bottom, void* pData, long* pPitch); //(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4* param_5, undefined4* param_6);
+	static void or_UnlockScreen();
+	static void or_MakeScreenshot(char* szName);
+	static void or_ReadConsoleVariables();
+	static uint32 or_BlitToScreen(intptr_t* pBlitRequest);
+	static uint32 or_BlitFromScreen(intptr_t* pBlitRequest);
+	static uint32 or_WarpToScreen(intptr_t* pBlitRequest);
 	static void or_VoidStub();
 	static unsigned int or_UintStub();
 	// End Render Functions`

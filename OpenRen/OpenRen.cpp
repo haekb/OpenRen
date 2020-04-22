@@ -223,41 +223,41 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 #ifdef OR_NOLF
 	*(undefined4*)(param_1 + 0x6c) = (unsigned int)(*OpenRen::or_Init);
 	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Term);
-	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_Fun2);//2;
-	*(undefined4*)(param_1 + 0x78) = (unsigned int)(*OpenRen::or_Fun3);//3;
+	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_BindTexture);//2;
+	*(undefined4*)(param_1 + 0x78) = (unsigned int)(*OpenRen::or_UnbindTexture);//3;
 	*(undefined4*)(param_1 + 0x7c) = (unsigned int)(*OpenRen::or_CreateContext);//4;
-	*(undefined4*)(param_1 + 0x80) = 5;
-	*(undefined4*)(param_1 + 0x84) = (unsigned int)(*OpenRen::or_Fun6);//6;
+	*(undefined4*)(param_1 + 0x80) = (unsigned int)(*OpenRen::or_DeleteContext);
+	*(undefined4*)(param_1 + 0x84) = (unsigned int)(*OpenRen::or_Clear);//6;
 	*(undefined4*)(param_1 + 0x88) = (unsigned int)(*OpenRen::or_Start3D);//7;
 	*(undefined4*)(param_1 + 0x8c) = (unsigned int)(*OpenRen::or_End3D);//8;
-	*(undefined4*)(param_1 + 0x90) = (unsigned int)(*OpenRen::Is3DModeEnabled);//9;
+	*(undefined4*)(param_1 + 0x90) = (unsigned int)(*OpenRen::or_Is3DModeEnabled);//9;
 	*(undefined4*)(param_1 + 0x94) = (unsigned int)(*OpenRen::or_StartOptimized2D);//10;
 	*(undefined4*)(param_1 + 0x98) = (unsigned int)(*OpenRen::or_EndOptimized2D);//11;
-	*(undefined4*)(param_1 + 0xa0) = (unsigned int)(*OpenRen::or_Fun12);//12;
-	*(undefined4*)(param_1 + 0xa4) = 13;
-	*(undefined4*)(param_1 + 0xa8) = (unsigned int)(*OpenRen::or_Fun14);//14;
-	*(undefined4*)(param_1 + 0xac) = 15;
-	*(undefined4*)(param_1 + 0x9c) = 16;
-	*(undefined4*)(param_1 + 0xdc) = (unsigned int)(*OpenRen::or_Fun17);//17;
-	*(undefined4*)(param_1 + 0xe0) = (unsigned int)(*OpenRen::or_Fun18);//18;
-	*(undefined4*)(param_1 + 0xb0) = (unsigned int)(*OpenRen::or_Fun19);//19;
+	*(undefined4*)(param_1 + 0xa0) = (unsigned int)(*OpenRen::or_SetOptimized2DBlend);//12;
+	*(undefined4*)(param_1 + 0xa4) = (unsigned int)(*OpenRen::or_GetOptimized2DBlend);//13;
+	*(undefined4*)(param_1 + 0xa8) = (unsigned int)(*OpenRen::or_SetOptimized2DColour);//14;
+	*(undefined4*)(param_1 + 0xac) = (unsigned int)(*OpenRen::or_GetOptimized2DColour);//15;
+	*(undefined4*)(param_1 + 0x9c) = (unsigned int)(*OpenRen::or_IsInOptimized2D);//16
+	*(undefined4*)(param_1 + 0xdc) = (unsigned int)(*OpenRen::or_OptimizeSurface);//17;
+	*(undefined4*)(param_1 + 0xe0) = (unsigned int)(*OpenRen::or_UnoptimizeSurface);//18;
+	*(undefined4*)(param_1 + 0xb0) = (unsigned int)(*OpenRen::or_RenderScene);//19;
 	*(undefined4*)(param_1 + 0xb4) = (unsigned int)(*OpenRen::or_RenderCommand);//20
 	*(undefined4*)(param_1 + 0xb8) = (unsigned int)(*OpenRen::or_GetHook);//21;
-	*(undefined4*)(param_1 + 0xbc) = (unsigned int)(*OpenRen::or_Flip);//22;
-	*(undefined4*)(param_1 + 0xc0) = 23;
+	*(undefined4*)(param_1 + 0xbc) = (unsigned int)(*OpenRen::or_SwapBuffers);//22;
+	*(undefined4*)(param_1 + 0xc0) = (unsigned int)(*OpenRen::or_GetInfoFlags);//23
 	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_SetScreenPixelFormat);//24;
 	*(undefined4*)(param_1 + 200) =  (unsigned int)(*OpenRen::or_CreateSurface);//25;
-	*(undefined4*)(param_1 + 0xcc) = (unsigned int)(*OpenRen::or_Fun26);//26;
+	*(undefined4*)(param_1 + 0xcc) = (unsigned int)(*OpenRen::or_DestroySurface);//26;
 	*(undefined4*)(param_1 + 0xd0) = (unsigned int)(*OpenRen::or_GetSurfaceDims);//27;
 	*(undefined4*)(param_1 + 0xd4) = (unsigned int)(*OpenRen::or_LockSurface);//28;
 	*(undefined4*)(param_1 + 0xd8) = (unsigned int)(*OpenRen::or_UnlockSurface);//29;
-	*(undefined4*)(param_1 + 0xe4) = (unsigned int)(*OpenRen::or_Fun30);//30;
-	*(undefined4*)(param_1 + 0xe8) = 31;
-	*(undefined4*)(param_1 + 0xf4) = 32;
-	*(undefined4*)(param_1 + 0xf8) = (unsigned int)(*OpenRen::or_Fun33);//33;
-	*(undefined4*)(param_1 + 0xec) = (unsigned int)(*OpenRen::or_DrawToScreen);//34;
-	*(undefined4*)(param_1 + 0xfc) = 35;
-	*(undefined4*)(param_1 + 0xf0) = 36;
+	*(undefined4*)(param_1 + 0xe4) = (unsigned int)(*OpenRen::or_LockScreen);//30;
+	*(undefined4*)(param_1 + 0xe8) = (unsigned int)(*OpenRen::or_UnlockScreen);//31;
+	*(undefined4*)(param_1 + 0xf4) = (unsigned int)(*OpenRen::or_MakeScreenshot);//32;
+	*(undefined4*)(param_1 + 0xf8) = (unsigned int)(*OpenRen::or_ReadConsoleVariables);//33;
+	*(undefined4*)(param_1 + 0xec) = (unsigned int)(*OpenRen::or_BlitToScreen);//34;
+	*(undefined4*)(param_1 + 0xfc) = (unsigned int)(*OpenRen::or_BlitFromScreen);//35;
+	*(undefined4*)(param_1 + 0xf0) = (unsigned int)(*OpenRen::or_WarpToScreen);//36;
 #elif OR_AVP2
 	// TODO: Remap memory! Init, and term seem right at least :)
 	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Init);// = 0x10010b22;
@@ -492,14 +492,13 @@ struct fn8Object {
 
 //0x74
 // Without this, CreateObject crashes!
-void OpenRen::or_Fun2(int iParm1, int iParm2)
+void OpenRen::or_BindTexture(intptr_t* pTextureData, int nFlag)
 {
-	SDL_Log("Calling CreateObject?");
-	int* ptr = (int*)iParm1;
+	SDL_Log("Calling BindTexture");
 
 	// RenderDLLStruct broke the hack stuff below
 	return;
-
+	/*
 	// 
 	CreateObjectParam1* pStruct = (CreateObjectParam1*)iParm1;
 
@@ -538,19 +537,20 @@ void OpenRen::or_Fun2(int iParm1, int iParm2)
 	bool debug = true;
 
 	return;
+	*/
 }
 
 //0x78
 // Without this, DestroyObject crashes!
-void OpenRen::or_Fun3(int iParm1)
+void OpenRen::or_UnbindTexture(intptr_t* pTextureData)
 {
-	SDL_Log("Calling DestroyObject?");
+	SDL_Log("Calling UnbindTexture");
 	return;
 }
 
 //0x7c
 // Lightmap related?
-unsigned int** OpenRen::or_CreateContext(unsigned int* puParm1)
+intptr_t* OpenRen::or_CreateContext(unsigned int* puParm1)
 {
 	SDL_Log("Calling or_CreateContext");
 #if 0
@@ -580,16 +580,20 @@ unsigned int** OpenRen::or_CreateContext(unsigned int* puParm1)
 	return (undefined * *)0;
 #endif
 
-	return (unsigned int**)0;
+	return nullptr;
+}
+
+void OpenRen::or_DeleteContext(intptr_t* pContext)
+{
+	SDL_Log("Calling DeleteContext");
 }
 
 //0x84
 // Big function, might be draw related?
 // Gets called if or_Fun9 returns 0
-void OpenRen::or_Fun6(int* piParm1, unsigned int uParm2)
+void OpenRen::or_Clear(LTRect pRect, uint32 nFlags)
 {
-	SDL_Log("Calling Function 6");
-	bool test = true;
+	SDL_Log("Calling Clear");
 }
 
 //0x88
@@ -626,7 +630,7 @@ unsigned int OpenRen::or_End3D()
 }
 
 //0x90
-unsigned int OpenRen::Is3DModeEnabled()
+unsigned int OpenRen::or_Is3DModeEnabled()
 {
 	SDL_Log("Calling Is 3D Enabled %d ?",g_OpenRen->m_Is3DModeEnabled);
 #if 0
@@ -655,9 +659,9 @@ void OpenRen::or_EndOptimized2D()
 //0xa0
 // Possibly draw related. gets called when or_Fun9 returns non-zero.
 // Looks like a switch statement
-unsigned int __cdecl OpenRen::or_Fun12(int param_1)
+uint32 OpenRen::or_SetOptimized2DBlend(uint32 nBlend)
 {
-	SDL_Log("Calling Function 12");
+	SDL_Log("Calling SetOptimized2DBlend");
 #if 1
 
 
@@ -665,18 +669,39 @@ unsigned int __cdecl OpenRen::or_Fun12(int param_1)
 	return 1;
 }
 
+uint32 OpenRen::or_GetOptimized2DBlend(uint32 &nBlend)
+{
+	SDL_Log("Calling GetOptimized2DBlend");
+
+	nBlend = 0;
+
+	return 1;
+}
+
 //0xa8
 // Draw related
-unsigned int OpenRen::or_Fun14(unsigned int uParam1)
+uint32 OpenRen::or_SetOptimized2DColour(uint32 nColour)
 {
-	SDL_Log("Calling Function 14");
+	SDL_Log("Calling SetOptimized2DColour");
 #if 0
 	DAT_10089448 = uParm1 & 0xffffff | 0xff000000;
 #endif
 	// 255?
-	unsigned int temp = uParam1 & 0xffffff | 0xff000000;
+	unsigned int temp = nColour & 0xffffff | 0xff000000;
 
 	// Always returns 1
+	return 1;
+}
+
+uint32 OpenRen::or_GetOptimized2DColour(uint32& nColour)
+{
+	SDL_Log("Calling GetOptimized2DColour");
+
+	return 1;
+}
+
+uint32 OpenRen::or_IsInOptimized2D()
+{
 	return 1;
 }
 
@@ -684,49 +709,16 @@ unsigned int OpenRen::or_Fun14(unsigned int uParam1)
 // Optimize Surface?
 // When not linked, crashes on `g_pLTClient->OptimizeSurface`
 // Big function eep! -- Takes in Surface Pointer
-unsigned int __cdecl OpenRen::or_Fun17(int param_1)
+uint32 OpenRen::or_OptimizeSurface(intptr_t* pSurface)
 {
 	SDL_Log("Calling OptimizeSurface");
-	int* ptr = (int*)param_1;
 
-	return 0;
+	return 1;
 }
 
-//0xe0
-void __cdecl OpenRen::or_Fun18(int param_1)
+void OpenRen::or_UnoptimizeSurface(intptr_t* pSurface)
 {
-	SDL_Log("Calling Function 18");
-	bool test = true;
-
-#if 0
-#define code void
-#define uint unsigned int
-
-	int iVar1;
-	int iVar2;
-	int* piVar3;
-	uint uVar4;
-
-	if ((param_1 != 0) && (piVar3 = *(int**)(param_1 + 0x84), piVar3 != (int*)0x0)) {
-		iVar1 = *piVar3;
-		uVar4 = 0;
-		iVar2 = piVar3[1];
-		if (iVar1 * iVar2 != 0) {
-			while (true) {
-				if ((piVar3 + uVar4 * 7)[8] != 0) {
-					piVar3 = (int*)(piVar3 + uVar4 * 7)[8];
-					//(**(code * *)(*piVar3 + 8))(piVar3);
-				}
-				uVar4 = uVar4 + 1;
-				if ((uint)(iVar1 * iVar2) <= uVar4) break;
-				piVar3 = *(int**)(param_1 + 0x84);
-			}
-		}
-		//FUN_10021cb0(*(LPVOID*)(param_1 + 0x84));
-		*(undefined4*)(param_1 + 0x84) = 0;
-	}
-	return;
-#endif
+	SDL_Log("Calling UnoptimizeSurface");
 }
 
 /*
@@ -863,10 +855,10 @@ struct RenderStruct {
 
 //0xb0
 // Probably RenderObjects related, it's a big function!
-unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
+uint32 OpenRen::or_RenderScene(intptr_t* pSceneDesc)
 {
-
-	RenderStruct* renderStruct = (RenderStruct*)pParam1;
+	SceneDesc* sceneDesc = (SceneDesc*)pSceneDesc;
+	RenderStruct* renderStruct = (RenderStruct*)pSceneDesc;
 
 	unsigned int offset = offsetof(RenderStruct, objects);
 
@@ -890,7 +882,7 @@ unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
 
 	//unsigned int* test = *pParam1 + 0x50
 
-	unsigned int* mysteryPointer = (unsigned int*)(pParam1 + 0x140);
+	unsigned int* mysteryPointer = (unsigned int*)(pSceneDesc + 0x140);
 
 #if 0
 	DAT_1008d520 = 0;
@@ -932,7 +924,7 @@ void* OpenRen::or_GetHook(char* pHook)
 
 //0xbc
 // 99% it's FlipScreen, so we'll just name it so.
-void __cdecl OpenRen::or_Flip(unsigned int param_1)
+void OpenRen::or_SwapBuffers(uint32 nFlags)
 {
 	SDL_Log("Calling Flip");
 	SDL_RenderClear(g_OpenRen->m_Renderer);
@@ -954,6 +946,11 @@ void __cdecl OpenRen::or_Flip(unsigned int param_1)
 	SDL_FillRect(g_OpenRen->m_ScreenSurface, NULL, 0x000000);
 
 	return;
+}
+
+uint32 OpenRen::or_GetInfoFlags()
+{
+	return 0;
 }
 
 
@@ -1038,18 +1035,18 @@ void OpenRen::or_SetScreenPixelFormat(unsigned int* param_1)
 //200
 // Font or Surface Init?
 //Fun25
-int** __cdecl OpenRen::or_CreateSurface(int param_1, int param_2)
+intptr_t* OpenRen::or_CreateSurface(int width, int height)
 {
 	SDL_Log("Calling CreateSurface");
-	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, param_1, param_2, 32, SDL_PIXELFORMAT_RGB888);
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGB888);
 
 	g_OpenRen->m_SurfaceCache.push_back(surface);
 
-	return (int**)surface;
+	return (intptr_t*)surface;
 }
 //0xcc
 // Most likely DestroySurface
-void __cdecl OpenRen::or_Fun26(int** param_1)
+void OpenRen::or_DestroySurface(intptr_t* pSurface)
 {
 	SDL_Log("Calling DestroySurface");
 	return;
@@ -1059,22 +1056,22 @@ void __cdecl OpenRen::or_Fun26(int** param_1)
 // Called after or_Fun25 (SurfaceInit)
 // Might be a lock? Param 1 is a pointer address, 2 is width, 3 is height, and 4 is pitch?
 //Fun27
-void OpenRen::or_GetSurfaceDims(int iParm1, undefined4* puParm2, undefined4* puParm3, undefined4* puParm4)
+void OpenRen::or_GetSurfaceDims(intptr_t* pSurface, uint32* pWidth, uint32* pHeight, uint32* pPitch)
 {
 	SDL_Log("Calling GetSurfaceDims");
-	if (iParm1 == NULL) {
+	if (pSurface == nullptr) {
 		return;
 	}
-	SDL_Surface* surface = (SDL_Surface*)iParm1;
+	SDL_Surface* surface = (SDL_Surface*)pSurface;
 
-	if (surface == NULL) {
+	if (surface == nullptr) {
 		return;
 	}
 
 	// Maybe it's surface info? Odd how it already has the info filled in :thinking:
-	*puParm2 = surface->w;
-	*puParm3 = surface->h;
-	*puParm4 = surface->pitch;
+	*pWidth = surface->w;
+	*pHeight = surface->h;
+	*pPitch = surface->pitch;
 
 #if 0
 	if (iParm1 != 0) {
@@ -1093,44 +1090,53 @@ void OpenRen::or_GetSurfaceDims(int iParm1, undefined4* puParm2, undefined4* puP
 
 //0xd4
 // Lock Surface!
-unsigned int __cdecl OpenRen::or_LockSurface(hSurf param_1)
+void* OpenRen::or_LockSurface(intptr_t pSurface)
 {
 	SDL_Log("Calling LockSurface");
-	SDL_Surface* surface = (SDL_Surface*) param_1;
+	SDL_Surface* surface = (SDL_Surface*)pSurface;
 
 	if (surface == NULL) {
 		return 0;
 	}
 
-	return (unsigned int)surface->pixels;
+	return (void*)surface->pixels;
 }
 
 //0xd8
-void OpenRen::or_UnlockSurface(hSurf param_1)
+void OpenRen::or_UnlockSurface(intptr_t pSurface)
 {
 	SDL_Log("Calling UnlockSurface");
-	if (param_1 == NULL) {
+	if (pSurface == NULL) {
 		return;
 	}
 
-	SDL_Surface* surface = (SDL_Surface*)param_1;
+	SDL_Surface* surface = (SDL_Surface*)pSurface;
 }
 
-//0xe4
-// No clue! Hasn't been called yet.
-unsigned int __cdecl OpenRen::or_Fun30(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4* param_5, undefined4* param_6)
+uint32 OpenRen::or_LockScreen(int left, int top, int right, int bottom, void* pData, long* pPitch)
 {
-	SDL_Log("Calling Function 30");
+	SDL_Log("Calling LockScreen");
 	return 0;
+}
+
+void OpenRen::or_UnlockScreen()
+{
+	SDL_Log("Calling UnlockScreen");
+}
+
+void OpenRen::or_MakeScreenshot(char* szName)
+{
+	SDL_Log("Calling MakeScreenshot");
+	return;
 }
 
 //FUN_10021f40 console?
 
 //0xf8
-void OpenRen::or_Fun33()
+void OpenRen::or_ReadConsoleVariables()
 {
 	SDL_Log("Calling Function 33 (Console?)");
-#if 1
+#if 0
 #define float10 float
 #define code void
 #define ROUND(x) round(x)
@@ -1196,9 +1202,9 @@ struct drawStruct {
 // Related to DrawSurfaceToSurface
 // Draw to Screen?
 // Fun34
-void OpenRen::or_DrawToScreen(int* piParm1)
+uint32 OpenRen::or_BlitToScreen(intptr_t* pBlitRequest)
 {
-	SDL_Log("Calling DrawToScreen");
+	SDL_Log("Calling BlitToScreen");
 #if 0
 	// 3d mode?
 	if (DAT_1008d7c8 != 0) {
@@ -1206,8 +1212,8 @@ void OpenRen::or_DrawToScreen(int* piParm1)
 	}
 
 #endif
-
-	drawStruct* ds = (drawStruct*)piParm1;
+	
+	drawStruct* ds = (drawStruct*)pBlitRequest;
 
 	unsigned int* unknownPtr = (unsigned int*)ds->unknown[1];
 	unsigned int* unknownPtr2 = (unsigned int*)ds->unknown2;
@@ -1250,7 +1256,17 @@ void OpenRen::or_DrawToScreen(int* piParm1)
 		SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_NONE);
 	}
 
-	return;
+	return 1;
+}
+
+uint32 OpenRen::or_BlitFromScreen(intptr_t* pBlitRequest)
+{
+	return 1;
+}
+
+uint32 OpenRen::or_WarpToScreen(intptr_t* pBlitRequest)
+{
+	return 1;
 }
 
 void OpenRen::or_VoidStub()
@@ -1261,20 +1277,3 @@ void OpenRen::or_VoidStub()
 unsigned int OpenRen::or_UintStub()
 {
 	return 0;
-}
-
-OpenRen::OpenRen()
-{
-	m_hMainWnd = NULL;
-	m_RenderLinkStruct = NULL;
-	m_RenderMode = {};
-	m_Window = NULL;
-	m_Renderer = NULL;
-	m_ScreenSurface = NULL;
-	m_Is3DModeEnabled = false;
-}
-
-OpenRen::~OpenRen()
-{
-}
-
