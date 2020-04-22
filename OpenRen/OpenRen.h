@@ -14,6 +14,39 @@
 #define RENDERER_MAGIC_VALUE 0xd5d
 #define RENDERER_DLL_NAME "Open Renderer"
 
+typedef void (*fnConsolePrint)(char* pMsg, ...);
+
+
+// PC Struct = 0x54
+// Mac Struct = 0x150
+// Must be a lot of opengl stuff shoved in there. 
+// Actually PC Struct gets cleared differently.
+// Mac uses memset, so that might be the actual size!
+struct DLLRenderStruct {
+	/*
+	intptr_t* Padding[5];
+	void (*ConsolePrint)(char* pMsg, ...);
+	intptr_t* AfterPadding[64];
+	*/
+
+	// 
+	//intptr_t* Unknown[0x40];
+	intptr_t* FunctionSpace1[15];
+	
+	// Confirmed
+	uint32 Width;
+	uint32 Height;
+	int IsInit;
+	
+	int Unknown1[9];
+	
+	intptr_t* FunctionSpace2[37];
+	// A don't clear marker is at 0x40
+	int32 DontClear;
+
+	int32 Unknown2[34];
+};
+
 // NOLF HEADER
 // Render modes are what are used to describe a video mode/video card.
 struct RMode
@@ -79,18 +112,20 @@ public:
 	static void or_Term();
 	static void or_Fun2(int iParm1, int iParm2);
 	static void or_Fun3(int iParm1);
-	static unsigned int** or_Fun4(unsigned int* puParm1);
+	static unsigned int** or_CreateContext(unsigned int* puParm1);
 	static void or_Fun6(int* piParm1, unsigned int uParm2);
 	static unsigned int or_Start3D();
 	static unsigned int or_End3D();
 	static unsigned int Is3DModeEnabled();
-	static unsigned int or_Fun10();
-	static void or_Fun11();
+	static unsigned int or_StartOptimized2D();
+	static void or_EndOptimized2D();
 	static unsigned int __cdecl or_Fun12(int param_1);
 	static unsigned int or_Fun14(unsigned int uParam1);
 	static unsigned int __cdecl or_Fun17(int param_1);
 	static void __cdecl or_Fun18(int param_1);
 	static unsigned int or_Fun19(unsigned int* pParam1);
+	static void or_RenderCommand(int argc, char** argv); //(void* param_1, int param_2, byte** param_3);
+	static void* or_GetHook(char* pHook);
 	static void __cdecl or_Flip(unsigned int param_1);
 	static void or_SetScreenPixelFormat(unsigned int* param_1);
 	static int** __cdecl or_CreateSurface(int param_1, int param_2);
@@ -107,7 +142,8 @@ public:
 
 	bool m_Is3DModeEnabled;
 
-	unsigned int* m_RenderLinkStruct;
+	DLLRenderStruct* m_RenderLinkStruct;
+	//uint32* m_RenderLinkStruct;
 
 	RMode m_RenderMode;
 	HWND m_hMainWnd;

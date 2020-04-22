@@ -208,7 +208,14 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 		g_OpenRen = new OpenRen();
 	}
 
-	g_OpenRen->m_RenderLinkStruct = (unsigned int*)param_1;
+	g_OpenRen->m_RenderLinkStruct = (DLLRenderStruct*)param_1;
+	auto test = sizeof(DLLRenderStruct);
+	//g_OpenRen->m_RenderLinkStruct = (uint32*)param_1;
+	auto offset = offsetof(struct DLLRenderStruct, DontClear);
+
+
+
+	//g_OpenRen->m_RenderLinkStruct->ConsolePrint((char*)"Hello World!");
 
 #if 1
 	// 0-index debugging based, sorry!
@@ -218,14 +225,14 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0x70) = (unsigned int)(*OpenRen::or_Term);
 	*(undefined4*)(param_1 + 0x74) = (unsigned int)(*OpenRen::or_Fun2);//2;
 	*(undefined4*)(param_1 + 0x78) = (unsigned int)(*OpenRen::or_Fun3);//3;
-	*(undefined4*)(param_1 + 0x7c) = (unsigned int)(*OpenRen::or_Fun4);//4;
+	*(undefined4*)(param_1 + 0x7c) = (unsigned int)(*OpenRen::or_CreateContext);//4;
 	*(undefined4*)(param_1 + 0x80) = 5;
 	*(undefined4*)(param_1 + 0x84) = (unsigned int)(*OpenRen::or_Fun6);//6;
 	*(undefined4*)(param_1 + 0x88) = (unsigned int)(*OpenRen::or_Start3D);//7;
 	*(undefined4*)(param_1 + 0x8c) = (unsigned int)(*OpenRen::or_End3D);//8;
 	*(undefined4*)(param_1 + 0x90) = (unsigned int)(*OpenRen::Is3DModeEnabled);//9;
-	*(undefined4*)(param_1 + 0x94) = (unsigned int)(*OpenRen::or_Fun10);//10;
-	*(undefined4*)(param_1 + 0x98) = (unsigned int)(*OpenRen::or_Fun11);//11;
+	*(undefined4*)(param_1 + 0x94) = (unsigned int)(*OpenRen::or_StartOptimized2D);//10;
+	*(undefined4*)(param_1 + 0x98) = (unsigned int)(*OpenRen::or_EndOptimized2D);//11;
 	*(undefined4*)(param_1 + 0xa0) = (unsigned int)(*OpenRen::or_Fun12);//12;
 	*(undefined4*)(param_1 + 0xa4) = 13;
 	*(undefined4*)(param_1 + 0xa8) = (unsigned int)(*OpenRen::or_Fun14);//14;
@@ -234,8 +241,8 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xdc) = (unsigned int)(*OpenRen::or_Fun17);//17;
 	*(undefined4*)(param_1 + 0xe0) = (unsigned int)(*OpenRen::or_Fun18);//18;
 	*(undefined4*)(param_1 + 0xb0) = (unsigned int)(*OpenRen::or_Fun19);//19;
-	*(undefined4*)(param_1 + 0xb4) = 20;
-	*(undefined4*)(param_1 + 0xb8) = 21;
+	*(undefined4*)(param_1 + 0xb4) = (unsigned int)(*OpenRen::or_RenderCommand);//20
+	*(undefined4*)(param_1 + 0xb8) = (unsigned int)(*OpenRen::or_GetHook);//21;
 	*(undefined4*)(param_1 + 0xbc) = (unsigned int)(*OpenRen::or_Flip);//22;
 	*(undefined4*)(param_1 + 0xc0) = 23;
 	*(undefined4*)(param_1 + 0xc4) = (unsigned int)(*OpenRen::or_SetScreenPixelFormat);//24;
@@ -349,7 +356,10 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	g_OpenRen->m_Window = SDL_CreateWindow("Test", 32, 32, 1280, 720, SDL_WINDOW_OPENGL);
+	uint32 Width = g_OpenRen->m_RenderLinkStruct->Width;
+	uint32 Height = g_OpenRen->m_RenderLinkStruct->Height;
+
+	g_OpenRen->m_Window = SDL_CreateWindow("Test", 32, 32, Width, Height, SDL_WINDOW_OPENGL);
 
 	// temp!
 	g_OpenRen->m_Renderer = SDL_CreateRenderer(g_OpenRen->m_Window, -1, 0);
@@ -359,7 +369,7 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	SDL_RenderPresent(g_OpenRen->m_Renderer);
 	SDL_SetRenderDrawColor(g_OpenRen->m_Renderer, 0, 128, 255, 255);
 
-	g_OpenRen->m_ScreenSurface = SDL_CreateRGBSurfaceWithFormat(0, 1280, 720, 32, SDL_PIXELFORMAT_RGB888);
+	g_OpenRen->m_ScreenSurface = SDL_CreateRGBSurfaceWithFormat(0, Width, Height, 32, SDL_PIXELFORMAT_RGB888);
 
 	// Setup the logging functions
 	SDL_LogSetOutputFunction(&SDLLog, NULL);
@@ -392,12 +402,17 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	SDL_SetWindowSize(g_OpenRen->m_Window, 1280, 720);
 	SDL_SetWindowPosition(g_OpenRen->m_Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
+
 	return 0;
 }
 
 void OpenRen::or_Term()
 {
 	SDL_Log("-- Open Renderer is going away now!");
+
+	SDL_DestroyWindow(g_OpenRen->m_Window);
+	g_OpenRen->m_Window = nullptr;
+
 	SDL_Quit();
 }
 
@@ -482,6 +497,9 @@ void OpenRen::or_Fun2(int iParm1, int iParm2)
 	SDL_Log("Calling CreateObject?");
 	int* ptr = (int*)iParm1;
 
+	// RenderDLLStruct broke the hack stuff below
+	return;
+
 	// 
 	CreateObjectParam1* pStruct = (CreateObjectParam1*)iParm1;
 
@@ -532,9 +550,9 @@ void OpenRen::or_Fun3(int iParm1)
 
 //0x7c
 // Lightmap related?
-unsigned int** OpenRen::or_Fun4(unsigned int* puParm1)
+unsigned int** OpenRen::or_CreateContext(unsigned int* puParm1)
 {
-	SDL_Log("Calling Function 4");
+	SDL_Log("Calling or_CreateContext");
 #if 0
 	undefined* puVar1;
 	undefined** ppuVar2;
@@ -620,7 +638,7 @@ unsigned int OpenRen::Is3DModeEnabled()
 
 //0x94
 // Most likely StartOptimized2D
-unsigned int OpenRen::or_Fun10()
+unsigned int OpenRen::or_StartOptimized2D()
 {
 	SDL_Log("Calling StartOptimized2D");
 	return 1;
@@ -628,7 +646,7 @@ unsigned int OpenRen::or_Fun10()
 
 //0x98
 // Most likely EndOptimized2D
-void OpenRen::or_Fun11()
+void OpenRen::or_EndOptimized2D()
 {
 	SDL_Log("Calling EndOptimized2D");
 	return;
@@ -894,6 +912,22 @@ unsigned int OpenRen::or_Fun19(unsigned int* pParam1)
 	//free(renderStruct->objects);
 
 	return 0;
+}
+
+void OpenRen::or_RenderCommand(int argc, char** argv)//(void* param_1, int param_2, byte** param_3)
+{
+	if (argc == 0)
+	{
+		return;
+	}
+
+	SDL_Log("[RenderCommand]: Args %s", argv[0]);
+}
+
+void* OpenRen::or_GetHook(char* pHook)
+{
+	SDL_Log("[GetHook] %s", pHook);
+	return nullptr;
 }
 
 //0xbc
