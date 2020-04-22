@@ -6,6 +6,11 @@
 #include <fstream>
 
 
+struct Context
+{
+	short		m_Unk;
+};
+
 // SDL Logging
 std::fstream g_SDLLogFile;
 
@@ -209,14 +214,48 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	}
 
 	g_OpenRen->m_RenderLinkStruct = (DLLRenderStruct*)param_1;
-	auto test = sizeof(DLLRenderStruct);
-	//g_OpenRen->m_RenderLinkStruct = (uint32*)param_1;
-	auto offset = offsetof(struct DLLRenderStruct, DontClear);
 
+#if 1
+	g_OpenRen->m_RenderLinkStruct->Init = OpenRen::or_Init;
+	g_OpenRen->m_RenderLinkStruct->Term = OpenRen::or_Term;
+	g_OpenRen->m_RenderLinkStruct->BindTexture = OpenRen::or_BindTexture;
+	g_OpenRen->m_RenderLinkStruct->UnbindTexture = OpenRen::or_UnbindTexture;
+	g_OpenRen->m_RenderLinkStruct->CreateContext = OpenRen::or_CreateContext;
+	g_OpenRen->m_RenderLinkStruct->DeleteContext = OpenRen::or_DeleteContext;
+	g_OpenRen->m_RenderLinkStruct->Clear = OpenRen::or_Clear;
+	g_OpenRen->m_RenderLinkStruct->Start3D = OpenRen::or_Start3D;
+	g_OpenRen->m_RenderLinkStruct->End3D = OpenRen::or_End3D;
+	g_OpenRen->m_RenderLinkStruct->Is3DModeEnabled = OpenRen::or_Is3DModeEnabled;
+	g_OpenRen->m_RenderLinkStruct->StartOptimized2D = OpenRen::or_StartOptimized2D;
+	g_OpenRen->m_RenderLinkStruct->EndOptimized2D = OpenRen::or_EndOptimized2D;
+	g_OpenRen->m_RenderLinkStruct->IsInOptimized2D = OpenRen::or_IsInOptimized2D;
+	g_OpenRen->m_RenderLinkStruct->SetOptimized2DBlend = OpenRen::or_SetOptimized2DBlend;
+	g_OpenRen->m_RenderLinkStruct->GetOptimized2DBlend = OpenRen::or_GetOptimized2DBlend;
+	g_OpenRen->m_RenderLinkStruct->SetOptimized2DColour = OpenRen::or_SetOptimized2DColour;
+	g_OpenRen->m_RenderLinkStruct->GetOptimized2DColour = OpenRen::or_GetOptimized2DColour;
+	g_OpenRen->m_RenderLinkStruct->RenderScene = OpenRen::or_RenderScene;
+	g_OpenRen->m_RenderLinkStruct->RenderCommand = OpenRen::or_RenderCommand;
+	g_OpenRen->m_RenderLinkStruct->GetHook = OpenRen::or_GetHook;
+	g_OpenRen->m_RenderLinkStruct->SwapBuffers = OpenRen::or_SwapBuffers;
+	g_OpenRen->m_RenderLinkStruct->GetInfoFlags = OpenRen::or_GetInfoFlags;
+	g_OpenRen->m_RenderLinkStruct->SetScreenPixelFormat = OpenRen::or_SetScreenPixelFormat;
+	g_OpenRen->m_RenderLinkStruct->CreateSurface = OpenRen::or_CreateSurface;
+	g_OpenRen->m_RenderLinkStruct->DeleteSurface = OpenRen::or_DestroySurface;
+	g_OpenRen->m_RenderLinkStruct->GetSurfaceDims = OpenRen::or_GetSurfaceDims;
+	g_OpenRen->m_RenderLinkStruct->LockSurface = OpenRen::or_LockSurface;
+	g_OpenRen->m_RenderLinkStruct->UnlockSurface = OpenRen::or_UnlockSurface;
+	g_OpenRen->m_RenderLinkStruct->OptimizeSurface = OpenRen::or_OptimizeSurface;
+	g_OpenRen->m_RenderLinkStruct->UnoptimizeSurface = OpenRen::or_UnoptimizeSurface;
+	g_OpenRen->m_RenderLinkStruct->LockScreen = OpenRen::or_LockScreen;
+	g_OpenRen->m_RenderLinkStruct->UnlockScreen = OpenRen::or_UnlockScreen;
+	g_OpenRen->m_RenderLinkStruct->BlitToScreen = OpenRen::or_BlitToScreen;
+	g_OpenRen->m_RenderLinkStruct->WarpToScreen = OpenRen::or_WarpToScreen;
+	g_OpenRen->m_RenderLinkStruct->MakeScreenshot = OpenRen::or_MakeScreenshot;
+	g_OpenRen->m_RenderLinkStruct->ReadConsoleVariables = OpenRen::or_ReadConsoleVariables;
+	g_OpenRen->m_RenderLinkStruct->BlitFromScreen = OpenRen::or_BlitFromScreen;
+#endif
 
-
-	//g_OpenRen->m_RenderLinkStruct->ConsolePrint((char*)"Hello World!");
-
+#if 0
 #if 1
 	// 0-index debugging based, sorry!
 
@@ -342,10 +381,10 @@ void __cdecl RenderDLLSetup(/*LinkStruct* pLinkStruct*/ unsigned int param_1)
 	*(undefined4*)(param_1 + 0xf0) = 0x10036da0;
 	return;
 #endif
-
+#endif
 }
 
-unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
+uint32 OpenRen::or_Init(InitStruct* pInitStruct)
 {
 	if (g_OpenRen->m_Window) {
 		return 0;
@@ -379,6 +418,9 @@ unsigned int __cdecl OpenRen::or_Init(InitStruct* pInitStruct)
 	//g_SDLLogFile.close();
 
 	SDL_Log("-- Open Renderer initialized!");
+
+
+	//((fnConsolePrint)(g_OpenRen->m_RenderLinkStruct + 0x14))((char*)"Hello World");
 
 	// Disable if you have CShell with SDL Window Creation!
 	return 0;
@@ -550,9 +592,23 @@ void OpenRen::or_UnbindTexture(intptr_t* pTextureData)
 
 //0x7c
 // Lightmap related?
-intptr_t* OpenRen::or_CreateContext(unsigned int* puParm1)
+intptr_t* OpenRen::or_CreateContext(intptr_t* pRenderContextInit)
 {
 	SDL_Log("Calling or_CreateContext");
+
+	Context* pContext;
+
+	pContext = (Context*)malloc(sizeof(Context));
+
+	if (!pContext)
+	{
+		return nullptr;
+	}
+
+	pContext->m_Unk = 0xFFFF;
+
+	return (intptr_t * )pContext;
+
 #if 0
 	undefined* puVar1;
 	undefined** ppuVar2;
@@ -586,6 +642,13 @@ intptr_t* OpenRen::or_CreateContext(unsigned int* puParm1)
 void OpenRen::or_DeleteContext(intptr_t* pContext)
 {
 	SDL_Log("Calling DeleteContext");
+
+	if (!pContext)
+	{
+		return;
+	}
+
+	free(pContext);
 }
 
 //0x84
@@ -597,7 +660,7 @@ void OpenRen::or_Clear(LTRect pRect, uint32 nFlags)
 }
 
 //0x88
-unsigned int OpenRen::or_Start3D()
+uint32 OpenRen::or_Start3D()
 {
 	SDL_Log("Calling Start3D");
 
@@ -620,7 +683,7 @@ unsigned int OpenRen::or_Start3D()
 
 //0x8c
 // End3D related?
-unsigned int OpenRen::or_End3D()
+uint32 OpenRen::or_End3D()
 {
 	SDL_Log("Calling End3D");
 
@@ -630,7 +693,7 @@ unsigned int OpenRen::or_End3D()
 }
 
 //0x90
-unsigned int OpenRen::or_Is3DModeEnabled()
+uint32 OpenRen::or_Is3DModeEnabled()
 {
 	SDL_Log("Calling Is 3D Enabled %d ?",g_OpenRen->m_Is3DModeEnabled);
 #if 0
@@ -642,7 +705,7 @@ unsigned int OpenRen::or_Is3DModeEnabled()
 
 //0x94
 // Most likely StartOptimized2D
-unsigned int OpenRen::or_StartOptimized2D()
+uint32 OpenRen::or_StartOptimized2D()
 {
 	SDL_Log("Calling StartOptimized2D");
 	return 1;
@@ -969,11 +1032,11 @@ struct pixelFormat {
 
 //0xc4
 //Fun24
-void OpenRen::or_SetScreenPixelFormat(unsigned int* param_1)
+void OpenRen::or_SetScreenPixelFormat(intptr_t* pPixelFormat)
 {
 	SDL_Log("Calling SetScreenPixelFormat");
 	// Fills it according to the memory dumps I've seen.
-	pixelFormat* pf = (pixelFormat*)param_1;
+	pixelFormat* pf = (pixelFormat*)pPixelFormat;
 
 	// It's either 2 or 3, 2 is 16bit according to some decompiled debug funcs, and 3 is from mem dump
 	pf->mode = 3;
@@ -1035,10 +1098,10 @@ void OpenRen::or_SetScreenPixelFormat(unsigned int* param_1)
 //200
 // Font or Surface Init?
 //Fun25
-intptr_t* OpenRen::or_CreateSurface(int width, int height)
+intptr_t* OpenRen::or_CreateSurface(uint32 nWidth, uint32 nHeight)
 {
 	SDL_Log("Calling CreateSurface");
-	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGB888);
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, nWidth, nHeight, 32, SDL_PIXELFORMAT_RGB888);
 
 	g_OpenRen->m_SurfaceCache.push_back(surface);
 
@@ -1049,6 +1112,12 @@ intptr_t* OpenRen::or_CreateSurface(int width, int height)
 void OpenRen::or_DestroySurface(intptr_t* pSurface)
 {
 	SDL_Log("Calling DestroySurface");
+
+	SDL_Surface* surface = (SDL_Surface*)pSurface;
+
+	SDL_FreeSurface(surface);
+	pSurface = nullptr;
+
 	return;
 }
 
@@ -1090,9 +1159,9 @@ void OpenRen::or_GetSurfaceDims(intptr_t* pSurface, uint32* pWidth, uint32* pHei
 
 //0xd4
 // Lock Surface!
-void* OpenRen::or_LockSurface(intptr_t pSurface)
+void* OpenRen::or_LockSurface(intptr_t* pSurface)
 {
-	SDL_Log("Calling LockSurface");
+	//SDL_Log("Calling LockSurface");
 	SDL_Surface* surface = (SDL_Surface*)pSurface;
 
 	if (surface == NULL) {
@@ -1103,9 +1172,9 @@ void* OpenRen::or_LockSurface(intptr_t pSurface)
 }
 
 //0xd8
-void OpenRen::or_UnlockSurface(intptr_t pSurface)
+void OpenRen::or_UnlockSurface(intptr_t* pSurface)
 {
-	SDL_Log("Calling UnlockSurface");
+	//SDL_Log("Calling UnlockSurface");
 	if (pSurface == NULL) {
 		return;
 	}
@@ -1204,7 +1273,7 @@ struct drawStruct {
 // Fun34
 uint32 OpenRen::or_BlitToScreen(intptr_t* pBlitRequest)
 {
-	SDL_Log("Calling BlitToScreen");
+	//SDL_Log("Calling BlitToScreen");
 #if 0
 	// 3d mode?
 	if (DAT_1008d7c8 != 0) {
@@ -1277,3 +1346,4 @@ void OpenRen::or_VoidStub()
 unsigned int OpenRen::or_UintStub()
 {
 	return 0;
+}

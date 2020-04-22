@@ -14,7 +14,27 @@
 #define RENDERER_MAGIC_VALUE 0xd5d
 #define RENDERER_DLL_NAME "Open Renderer"
 
-typedef void (*fnConsolePrint)(char* pMsg, ...);
+// NOLF HEADER
+// Render modes are what are used to describe a video mode/video card.
+struct RMode
+{
+	unsigned int			m_bHardware;
+
+	char			m_RenderDLL[256];		// What DLL this comes from.		
+	char			m_InternalName[128];	// This is what the DLLs use to identify a card.
+	char			m_Description[128];		// This is a 'friendly' string describing the card.
+
+	unsigned int	m_Width, m_Height, m_BitDepth;
+	RMode* m_pNext;
+};
+struct InitStruct
+{
+	int magic;
+	// I see width/height mentioned, so it must just have one of these boys
+	RMode renderMode;
+
+	HWND hMainWnd;
+};
 
 
 // PC Struct = 0x54
@@ -59,32 +79,57 @@ struct DLLRenderStruct {
 	
 	int Unknown1[9];
 	
-	// Our render functions!
-	// Order here counts per game, so these may be shuffled around.
-	//uint32 (*Init)(intptr_t* pInitStruct);
-	//void (*Term)(void);
 
+	//intptr_t* FunctionSpace2[37];
+	/////////////////////////////////////////
+	// DLL Function space
+	// Could use a clean up..
+	/////////////////////////////////////////
+	uint32 (*Init)(InitStruct* pInitStruct);
+	void (*Term)(void);
+	void (*BindTexture)(intptr_t* pTextureData, int nFlag);
+	void (*UnbindTexture)(intptr_t* pTextureData);
+	intptr_t* (*CreateContext)(intptr_t* pRenderContextInit);
+	void (*DeleteContext)(intptr_t* pContext);
+	void (*Clear)(LTRect pRect, uint32 nFlags);
+	uint32 (*Start3D)(void);
+	uint32 (*End3D)(void);
+	uint32 (*Is3DModeEnabled)(void);
+	uint32 (*StartOptimized2D)(void);
+	void (*EndOptimized2D)(void);
+	uint32(*IsInOptimized2D)(void);
+	uint32 (*SetOptimized2DBlend)(uint32 nBlend);
+	uint32 (*GetOptimized2DBlend)(uint32& nBlend);
+	uint32 (*SetOptimized2DColour)(uint32 nColour);
+	uint32 (*GetOptimized2DColour)(uint32& nColour);
+	uint32(*RenderScene)(intptr_t* pSceneDesc);
+	void (*RenderCommand)(int argc, char** argv);
+	void* (*GetHook)(char* szHookName);
+	void (*SwapBuffers)(uint32 nFlags);
+	uint32(*GetInfoFlags)(void);
+	void (*SetScreenPixelFormat)(intptr_t* pPixelFormat);
+	intptr_t* (*CreateSurface)(uint32 nWidth, uint32 nHeight);
+	void (*DeleteSurface)(intptr_t* pSurface);
+	void (*GetSurfaceDims)(intptr_t* pSurface, uint32* pWidth, uint32* pHeight, uint32* pPitch);
+	void* (*LockSurface)(intptr_t* pSurface);
+	void (*UnlockSurface)(intptr_t* pSurface);
+	uint32(*OptimizeSurface)(intptr_t* pSurface);
+	void (*UnoptimizeSurface)(intptr_t* pSurface);
+	uint32 (*LockScreen)(int left, int top, int right, int bottom, void* pData, long* pPitch);
+	void (*UnlockScreen)(void);
+	uint32(*BlitToScreen)(intptr_t* pBlitRequest);
+	uint32(*WarpToScreen)(intptr_t* pBlitRequest);
+	void (*MakeScreenshot)(char* szName);
+	void (*ReadConsoleVariables)(void);
+	uint32(*BlitFromScreen)(intptr_t* pBlitRequest);
 
-	intptr_t* FunctionSpace2[37];
 	// A don't clear marker is at 0x40
 	int32 DontClear;
 
 	int32 Unknown2[34];
 };
 
-// NOLF HEADER
-// Render modes are what are used to describe a video mode/video card.
-struct RMode
-{
-	unsigned int			m_bHardware;
 
-	char			m_RenderDLL[256];		// What DLL this comes from.		
-	char			m_InternalName[128];	// This is what the DLLs use to identify a card.
-	char			m_Description[128];		// This is a 'friendly' string describing the card.
-
-	unsigned int	m_Width, m_Height, m_BitDepth;
-	RMode* m_pNext;
-};
 /*
 class LTRect
 {
@@ -116,14 +161,6 @@ public:
 
 // Jake's guessing iunno
 
-struct InitStruct
-{
-	int magic;
-	// I see width/height mentioned, so it must just have one of these boys
-	RMode renderMode;
-
-	HWND hMainWnd;
-};
 
 class OpenRen {
 	typedef int** hSurf;
@@ -132,17 +169,17 @@ public:
 	~OpenRen();
 
 	// Render Functions
-	static unsigned int __cdecl or_Init(InitStruct* pInitStruct);
+	static uint32 or_Init(InitStruct* pInitStruct);
 	static void or_Term();
 	static void or_BindTexture(intptr_t* pTextureData, int nFlag);
 	static void or_UnbindTexture(intptr_t* pTextureData);
-	static intptr_t* or_CreateContext(unsigned int* puParm1);
+	static intptr_t* or_CreateContext(intptr_t* pRenderContextInit);
 	static void or_DeleteContext(intptr_t* pContext);
 	static void or_Clear(LTRect pRect, uint32 nFlags);
-	static unsigned int or_Start3D();
-	static unsigned int or_End3D();
-	static unsigned int or_Is3DModeEnabled();
-	static unsigned int or_StartOptimized2D();
+	static uint32 or_Start3D();
+	static uint32 or_End3D();
+	static uint32 or_Is3DModeEnabled();
+	static uint32 or_StartOptimized2D();
 	static void or_EndOptimized2D();
 	static uint32 or_SetOptimized2DBlend(uint32 nBlend);
 	static uint32 or_GetOptimized2DBlend(uint32& nBlend);
@@ -156,12 +193,12 @@ public:
 	static void* or_GetHook(char* pHook);
 	static void or_SwapBuffers(uint32 nFlags);
 	static uint32 or_GetInfoFlags();
-	static void or_SetScreenPixelFormat(unsigned int* param_1);
-	static intptr_t* or_CreateSurface(int width, int height);
+	static void or_SetScreenPixelFormat(intptr_t* pPixelFormat);
+	static intptr_t* or_CreateSurface(uint32 nWidth, uint32 nHeight);
 	static void or_DestroySurface(intptr_t* pSurface);
 	static void or_GetSurfaceDims(intptr_t* pSurface, uint32* pWidth, uint32* pHeight, uint32* pPitch);
-	static void* or_LockSurface(intptr_t pSurface);
-	static void or_UnlockSurface(intptr_t pSurface);
+	static void* or_LockSurface(intptr_t* pSurface);
+	static void or_UnlockSurface(intptr_t* pSurface);
 	static uint32 or_LockScreen(int left, int top, int right, int bottom, void* pData, long* pPitch); //(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4* param_5, undefined4* param_6);
 	static void or_UnlockScreen();
 	static void or_MakeScreenshot(char* szName);
