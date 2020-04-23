@@ -23,5 +23,11 @@
     <ClInclude Include="OpenRen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LTRen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NoCommit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

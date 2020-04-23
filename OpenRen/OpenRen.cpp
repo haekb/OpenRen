@@ -6,10 +6,6 @@
 #include <fstream>
 
 
-struct Context
-{
-	short		m_Unk;
-};
 
 // SDL Logging
 std::fstream g_SDLLogFile;
@@ -532,11 +528,96 @@ struct fn8Object {
 	*/
 };
 
+
 //0x74
 // Without this, CreateObject crashes!
 void OpenRen::or_BindTexture(intptr_t* pTextureData, int nFlag)
 {
 	SDL_Log("Calling BindTexture");
+
+	SharedTexture* pSharedTexture = (SharedTexture*)pTextureData;
+
+	intptr_t* pTextureRef = pSharedTexture->pData1;//*(intptr_t **)(pTextureData + 0xc);
+	auto pShouldExist = pTextureData[1];
+	//auto what = (pTextureData + 0x10);
+
+	//texTest* test = (texTest*)pTextureData;
+
+	
+	if (pTextureRef == nullptr)
+	{
+		TextureData* pTexture = (TextureData*)g_OpenRen->m_RenderLinkStruct->GetTexture(pTextureData);
+
+		// Maybe try again?
+		if (!pTexture)
+		{
+			pTexture = (TextureData*)g_OpenRen->m_RenderLinkStruct->GetTexture(pTextureData);
+
+			if (!pTexture)
+			{
+				return;
+			}
+		}
+
+		auto siz = sizeof(DTXExtraData);
+
+		auto ePixelFormat = SDL_PIXELFORMAT_RGB565;
+		int depth = 16;
+		int pitch = pTexture->dtxHeader.Width*3;
+		/*
+		BPP_8P = 0
+		BPP_8 = 1
+		BPP_16 = 2
+		BPP_32 = 3
+		BPP_S3TC_DXT1 = 4
+		BPP_S3TC_DXT3 = 5
+		BPP_S3TC_DXT5 = 6
+		BPP_32P = 7
+		*/
+		switch (pTexture->dtxHeader.ExtraData[2])
+		{
+		case 0:
+			ePixelFormat = SDL_PIXELFORMAT_INDEX8;
+			depth = 8;
+			break;
+		case 1:
+			ePixelFormat = SDL_PIXELFORMAT_RGB332;
+			depth = 8;
+			break;
+		case 2:
+			ePixelFormat = SDL_PIXELFORMAT_RGB565;
+			depth = 16;
+			pitch = pTexture->dtxHeader.Width * 3;
+			break;
+		case 3: 
+			ePixelFormat = SDL_PIXELFORMAT_RGBA32;
+			depth = 32;
+			pitch = pTexture->dtxHeader.Width * 4;
+
+			break;
+		default:
+			SDL_Log("Texture format isn't handled yet!");
+			return;
+		}
+
+		auto surf = SDL_CreateRGBSurfaceWithFormatFrom(pTexture->pTextureData, pTexture->dtxHeader.Width, pTexture->dtxHeader.Height, depth, pitch, ePixelFormat);
+		static uint32 dumpCounter = 0;
+		std::string fileName = "dump\\" + std::to_string(++dumpCounter);
+		fileName += ".bmp";
+
+		// Test dump!
+		SDL_SaveBMP(surf, fileName.c_str());
+
+		bool f = true;
+	}
+	else if (pTextureRef && nFlag != 0)
+	{
+		auto pTex = g_OpenRen->m_RenderLinkStruct->GetTexture(pTextureRef);
+		bool f = true;
+	}
+
+
+	bool t = true;
 
 	// RenderDLLStruct broke the hack stuff below
 	return;
@@ -824,96 +905,6 @@ struct objectData {
 	LTVector unknownVector;
 };
 */
-
-struct ptr1 {
-	unsigned int* ptrParty[2];
-	CheapLTLink ltCheapLink1;
-	CheapLTLink ltCheapLink2;
-};
-
-
-struct fileEntry {
-	unsigned int* empty;
-	LTLink link;
-	unsigned int* rezRelated;
-	unsigned short maxShort;
-	unsigned short fileNameLength;
-	unsigned int* unknownLowNumber;
-	unsigned char* fileName;
-	unsigned int* modelRelatedArea;
-};
-
-struct filesArr {
-	fileEntry files[4];
-};
-
-
-struct objectData {
-	unsigned int* objConstant; // This is within lithtech.exe, it's pretty constant between all the examples i've seen.
-	ptr1 pointer1;
-	objectData* thisRef;
-	//unsigned int* ptrParty[2];
-	//LTLink link1;
-	unsigned int* filler1;
-	LTLink link2;
-	unsigned int* filler2;
-	LTLink link3;
-	unsigned int* filler3;
-	LTLink link4;
-	unsigned int* zero[2];
-	unsigned char colour[4]; // Colour?
-	unsigned int* ptr1;
-	CheapLTLink cheapLink1;
-	unsigned int* filler4;
-	LTLink link5;
-	unsigned int* ptrParty1point5[4];
-	unsigned int objectFlag1;
-	unsigned int objectFlag2;
-	unsigned int* ptrParty2[3];
-	LTRotation rotation;
-	LTVector scale;
-	unsigned int* unknownInt;
-	unsigned int objectType;
-	unsigned int* ptrParty3[12];
-	LTVector positionMin;
-	LTVector positionMax;
-	unsigned int* ptrParty4[33];
-	LTVector position;
-	LTVector unknownVector;
-	unsigned int* unknownEnd1[2];
-	filesArr* files;
-	unsigned int* unknownEnd[33];
-};
-
-
-struct objectStruct {
-	objectData* objects[15]; // Based off objCount!
-};
-
-struct RenderStruct {
-	int type; // version didn't make sense, those are the only two i've got :shrug:
-	unsigned int* ptrParty[6]; // 6 pointers, gosh golly! They're all zeros
-	char unknown[52];
-	float vector[3]; // Maybe vector? 3 1.0 floats
-	char unknown2[12];
-	float deltaTime; // 90% sure
-	//unsigned int largeNumber;
-	char unknown3[48];
-	unsigned int* unknownPtr1; // Goes to a 4-byte zero'd out value
-	char unknown4[12];
-	unsigned int width;
-	unsigned int height;
-	//unsigned int largeNumber2;
-	//unsigned short shortNumber1;
-	//unsigned short shortNumber2;
-	float vector2[3];
-	char unknown5[24];
-	float unknownFloat2;
-	objectStruct* objects;
-	//unsigned int* objects[52]; // Max interface objs + 2!
-	//unsigned int** objects; // Goes to a 8-byte value
-	int objCount; // Confirmed
-};
 
 
 //0xb0
@@ -1347,3 +1338,19 @@ unsigned int OpenRen::or_UintStub()
 {
 	return 0;
 }
+
+OpenRen::OpenRen()
+{
+	m_hMainWnd = NULL;
+	m_RenderLinkStruct = NULL;
+	m_RenderMode = {};
+	m_Window = NULL;
+	m_Renderer = NULL;
+	m_ScreenSurface = NULL;
+	m_Is3DModeEnabled = false;
+}
+
+OpenRen::~OpenRen()
+{
+}
+

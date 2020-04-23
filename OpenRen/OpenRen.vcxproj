@@ -228,6 +228,8 @@
     <ClCompile Include="OpenRen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LTRen.h" />
+    <ClInclude Include="NoCommit.h" />
     <ClInclude Include="OpenRen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
