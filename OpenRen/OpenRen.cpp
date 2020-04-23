@@ -537,12 +537,8 @@ void OpenRen::or_BindTexture(intptr_t* pTextureData, int nFlag)
 
 	SharedTexture* pSharedTexture = (SharedTexture*)pTextureData;
 
-	intptr_t* pTextureRef = pSharedTexture->pData1;//*(intptr_t **)(pTextureData + 0xc);
+	intptr_t* pTextureRef = pSharedTexture->pCachedTexture;//*(intptr_t **)(pTextureData + 0xc);
 	auto pShouldExist = pTextureData[1];
-	//auto what = (pTextureData + 0x10);
-
-	//texTest* test = (texTest*)pTextureData;
-
 	
 	if (pTextureRef == nullptr)
 	{
@@ -601,6 +597,9 @@ void OpenRen::or_BindTexture(intptr_t* pTextureData, int nFlag)
 		}
 
 		auto surf = SDL_CreateRGBSurfaceWithFormatFrom(pTexture->pTextureData, pTexture->dtxHeader.Width, pTexture->dtxHeader.Height, depth, pitch, ePixelFormat);
+		
+		pSharedTexture->pCachedTexture = (intptr_t*)surf;
+
 		static uint32 dumpCounter = 0;
 		std::string fileName = "dump\\" + std::to_string(++dumpCounter);
 		fileName += ".bmp";
@@ -612,7 +611,7 @@ void OpenRen::or_BindTexture(intptr_t* pTextureData, int nFlag)
 	}
 	else if (pTextureRef && nFlag != 0)
 	{
-		auto pTex = g_OpenRen->m_RenderLinkStruct->GetTexture(pTextureRef);
+		//auto pTex = g_OpenRen->m_RenderLinkStruct->GetTexture(pTextureRef);
 		bool f = true;
 	}
 

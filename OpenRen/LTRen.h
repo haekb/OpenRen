@@ -140,7 +140,7 @@ struct SharedTexture {
 
 
 	intptr_t* pData1;
-	intptr_t* pData2;
+	intptr_t* pCachedTexture;
 	//LTLink Link;
 
 	// LT Link doesn't want to work here
