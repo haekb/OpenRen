@@ -581,12 +581,12 @@ void OpenRen::or_BindTexture(intptr_t* pTextureData, int nFlag)
 			depth = 8;
 			break;
 		case 2:
-			ePixelFormat = SDL_PIXELFORMAT_RGB565;
+			ePixelFormat = SDL_PIXELFORMAT_BGR565;
 			depth = 16;
 			pitch = pTexture->dtxHeader.Width * 3;
 			break;
 		case 3: 
-			ePixelFormat = SDL_PIXELFORMAT_RGBA32;
+			ePixelFormat = SDL_PIXELFORMAT_BGRA32;
 			depth = 32;
 			pitch = pTexture->dtxHeader.Width * 4;
 
